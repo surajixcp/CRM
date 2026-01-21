@@ -1,5 +1,8 @@
 const Attendance = require('../models/Attendance');
 const Settings = require('../models/Settings');
+const User = require('../models/User');
+const Leave = require('../models/Leave');
+const Holiday = require('../models/Holiday');
 
 // @desc    Check in for attendance
 // @route   POST /attendance/checkin
@@ -102,6 +105,11 @@ const checkOut = async (req, res) => {
         attendance.overtimeHours = (hours - standardShift).toFixed(2);
     }
 
+    // Mark as half-day if hours are significantly low (e.g., < 4 hours)
+    if (hours < 4 && hours > 0) {
+        attendance.status = 'half_day';
+    }
+
     await attendance.save();
 
     res.json(attendance);
@@ -157,7 +165,6 @@ const getMonthlyAttendance = async (req, res) => {
     }).sort({ date: 1 });
 
     // Fetch Holidays for this period
-    const Holiday = require('../models/Holiday');
     const holidays = await Holiday.find({
         date: { $gte: startDate, $lte: endDate }
     });
@@ -192,7 +199,6 @@ const getMonthlyAttendance = async (req, res) => {
 
     if (today >= startDate && today <= endDate) {
         // Fetch user to check joining date
-        const User = require('../models/User');
         const user = await User.findById(req.params.userId).select('joiningDate');
 
         const jDate = user && user.joiningDate ? new Date(user.joiningDate) : null;
@@ -210,9 +216,6 @@ const getMonthlyAttendance = async (req, res) => {
         });
 
         if (!hasTodayRecord) {
-            const Leave = require('../models/Leave');
-            const Settings = require('../models/Settings');
-
             // Re-use logic from getAllAttendance for consistency
             const startOfToday = new Date(today);
             const endOfToday = new Date(today);
@@ -265,17 +268,67 @@ const getAttendanceSummary = async (req, res) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const User = require('../models/User'); // Ensure it's required at least once in this file or above
+        console.log('Fetching Attendance Summary for:', today);
+
         const totalEmployees = await User.countDocuments({ role: 'employee', status: 'active' });
-        const presentCount = await Attendance.countDocuments({ date: today, status: 'present' });
-        const absentCount = totalEmployees - presentCount; // Simplified logic
+
+        // 1. Get all attendance logs for today
+        const attendanceLogs = await Attendance.find({
+            date: { $gte: today, $lt: tomorrow }
+        }).select('user status');
+
+        // 2. Get all approved leaves for today
+        const leaves = await Leave.find({
+            status: 'approved',
+            startDate: { $lte: new Date(today.getTime() + 23 * 59 * 59 * 999) },
+            endDate: { $gte: today }
+        }).select('user leaveDuration');
+
+        // Logic to categorize employees (Priority: Present/Late > Half Day > On Leave > Absent)
+        let presentSet = new Set();
+        let halfDaySet = new Set();
+        let onLeaveSet = new Set();
+
+        attendanceLogs.forEach(log => {
+            if (['present', 'late'].includes(log.status)) {
+                presentSet.add(log.user.toString());
+            } else if (log.status === 'half_day') {
+                halfDaySet.add(log.user.toString());
+            }
+        });
+
+        leaves.forEach(l => {
+            const userId = l.user.toString();
+            // Only add to halfDay if not already present
+            if (l.leaveDuration === 0.5) {
+                if (!presentSet.has(userId)) {
+                    halfDaySet.add(userId);
+                }
+            } else {
+                // Full day leave - only if not already present/half-day worked
+                if (!presentSet.has(userId) && !halfDaySet.has(userId)) {
+                    onLeaveSet.add(userId);
+                }
+            }
+        });
+
+        const presentCount = presentSet.size;
+        const halfDayCount = halfDaySet.size;
+        const onLeaveCount = onLeaveSet.size;
+        const absentCount = Math.max(0, totalEmployees - (presentCount + halfDayCount + onLeaveCount));
+
+        console.log('Summary Result:', { totalEmployees, present: presentCount, halfDay: halfDayCount, onLeave: onLeaveCount, absent: absentCount });
 
         res.json({
             date: today,
             totalEmployees,
             present: presentCount,
-            absent: absentCount
+            absent: absentCount,
+            halfDay: halfDayCount,
+            onLeave: onLeaveCount
         });
     } catch (error) {
         console.error('Get Attendance Summary Error:', error);
@@ -315,9 +368,6 @@ const getAllAttendance = async (req, res) => {
 
     // If it's a single day view (e.g., today), include all active employees
     if (startDate && (startDate === endDate || !endDate)) {
-        const User = require('../models/User');
-        const Leave = require('../models/Leave');
-
         // Normalize todayDate for robust comparison
         const todayDate = new Date(startDate);
         todayDate.setHours(0, 0, 0, 0);
@@ -339,9 +389,6 @@ const getAllAttendance = async (req, res) => {
         const loggedUserIds = logs.map(l => l.user ? l.user._id.toString() : null);
 
         const missingUsers = eligibleUsers.filter(u => !loggedUserIds.includes(u._id.toString()));
-
-        const Settings = require('../models/Settings');
-        const Holiday = require('../models/Holiday');
 
         const holiday = await Holiday.findOne({
             date: {
@@ -380,7 +427,7 @@ const getAllAttendance = async (req, res) => {
                 return {
                     user: u,
                     date: todayDate,
-                    status: 'leave', // Proactively marked as leave
+                    status: leave.leaveDuration === 0.5 ? 'half_day' : 'leave', // Differentiate half-day vs full-day
                     leaveType: leave.leaveType,
                     leaveDuration: leave.leaveDuration || 1,
                     isMissingRecord: true
@@ -416,11 +463,136 @@ const getAllAttendance = async (req, res) => {
     res.json(logs);
 };
 
+const exportAttendanceToExcel = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: 'Please provide startDate and endDate' });
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        // Fetch all active employees
+        const employees = await User.find({
+            role: 'employee',
+            status: 'active'
+        }).select('name email designation joiningDate').sort({ name: 1 });
+
+        // Fetch attendance logs for the period
+        const logs = await Attendance.find({
+            date: { $gte: start, $lte: end }
+        }).populate('user', 'name');
+
+        // Fetch holidays
+        const holidayList = await Holiday.find({
+            date: { $gte: start, $lte: end }
+        });
+
+        // Fetch leaves
+        const leaves = await Leave.find({
+            status: 'approved',
+            $or: [
+                { startDate: { $lte: end }, endDate: { $gte: start } }
+            ]
+        });
+
+        // Fetch settings for weekend policy
+        const settings = await Settings.findOne() || {};
+        const weekendPolicy = settings.weekendPolicy || ['Sat', 'Sun'];
+
+        const XLSX = require('xlsx');
+
+        // Prepare dates array
+        const dates = [];
+        let current = new Date(start);
+        while (current <= end) {
+            dates.push(new Date(current));
+            current.setDate(current.getDate() + 1);
+        }
+
+        // Prepare Header
+        const header = ['Employee Name', 'Email', 'Designation', ...dates.map(d => d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' }))];
+
+        // Prepare Data Rows
+        const dataRows = employees.map(emp => {
+            const row = [emp.name, emp.email, emp.designation];
+
+            dates.forEach(date => {
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const dayName = dayNames[date.getDay()];
+
+                // 1. Check Holiday first
+                const holiday = holidayList.find(h => new Date(h.date).toDateString() === date.toDateString());
+                if (holiday) {
+                    row.push('H'); // Holiday
+                    return;
+                }
+
+                // 2. Check Weekend
+                if (weekendPolicy.includes(dayName)) {
+                    row.push('W'); // Weekend
+                    return;
+                }
+
+                // 3. Check Attendance Log
+                const log = logs.find(l => l.user && l.user._id.toString() === emp._id.toString() && new Date(l.date).toDateString() === date.toDateString());
+                if (log) {
+                    if (log.status === 'present') row.push('P');
+                    else if (log.status === 'late') row.push('L');
+                    else if (log.status === 'half_day' || log.workingHours < 4) row.push('HD');
+                    else row.push(log.status.charAt(0).toUpperCase());
+                    return;
+                }
+
+                // 4. Check Leave
+                const leave = leaves.find(lv => lv.user.toString() === emp._id.toString() && new Date(lv.startDate) <= date && new Date(lv.endDate) >= date);
+                if (leave) {
+                    row.push('LV'); // Leave
+                    return;
+                }
+
+                // 5. Default to Absent
+                row.push('A');
+            });
+
+            return row;
+        });
+
+        // Create Workbook
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet([header, ...dataRows]);
+
+        // Auto-width for columns
+        const colWidths = header.map(h => ({ wch: h.length + 5 }));
+        ws['!cols'] = colWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Attendance_Register');
+
+        const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+        res.set({
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition': `attachment; filename="Attendance_Register_${startDate}_to_${endDate}.xlsx"`,
+            'Content-Length': buffer.length
+        });
+
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export Error:', error);
+        res.status(500).json({ message: 'Internal Server Error during export' });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
     getDailyAttendance,
     getMonthlyAttendance,
     getAttendanceSummary,
-    getAllAttendance
+    getAllAttendance,
+    exportAttendanceToExcel
 };

@@ -1,5 +1,5 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icons } from '../constants';
 import { Employee, ScreenType } from '../types';
 import { employeeService } from '../src/api/employeeService';
@@ -382,9 +382,9 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
       </div>
 
       {/* Management Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-[6px] flex items-center justify-center z-[110] p-4 animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]">
+      {showModal && createPortal(
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-[8px] flex items-center justify-center z-[9999] p-4 lg:p-8 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_70px_-10px_rgba(0,0,0,0.5)] w-full max-w-lg flex flex-col overflow-hidden animate-in zoom-in-95 duration-400 border border-slate-200 dark:border-slate-800 relative">
             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
               <div>
                 <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">{editingEmployee ? 'Update Identity' : 'Register Staff'}</h3>
@@ -394,135 +394,201 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
-            <form className="p-6 space-y-4 overflow-y-auto max-h-[75vh] custom-scrollbar" onSubmit={handleSubmit}>
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Personnel Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all dark:text-slate-100"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Electronic Mail</label>
+            <form className="p-6 md:p-8 space-y-5 overflow-y-auto max-h-[85vh] custom-scrollbar" onSubmit={handleSubmit}>
+              <div className="space-y-1.5 group">
+                <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5 flex items-center">
+                  <span className="w-1 h-3 bg-blue-600 rounded-full mr-2"></span>
+                  Personnel Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                  </div>
                   <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all dark:text-slate-100"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    placeholder="E.G. ALEXANDER PIERCE"
                     required
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Compensation</label>
-                  <div className="flex gap-1.5">
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Electronic Mail</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
                     <input
-                      type="number"
-                      value={formData.salary}
-                      onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                      className="flex-1 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-2 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all dark:text-slate-100"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                      placeholder="MAIL@WORKSTREAM.IO"
                       required
                     />
+                  </div>
+                </div>
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Compensation</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      </div>
+                      <input
+                        type="number"
+                        value={formData.salary}
+                        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                        className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                        required
+                      />
+                    </div>
                     <select
                       value={formData.salaryType || 'monthly'}
                       onChange={(e) => setFormData({ ...formData, salaryType: e.target.value as any })}
-                      className="w-20 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-2 text-[9px] font-black uppercase focus:bg-white outline-none dark:text-slate-300 dark:bg-slate-900"
+                      className="w-24 border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl px-2 text-[10px] font-black text-slate-900 dark:text-white uppercase focus:border-blue-500 outline-none cursor-pointer"
                     >
-                      <option value="monthly">MO</option>
-                      <option value="annual">YR</option>
+                      <option value="monthly">MONTHLY</option>
+                      <option value="annual">ANNUAL</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Contact Sync</label>
-                  <input
-                    type="tel"
-                    value={formData.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 outline-none transition-all dark:text-slate-100"
-                  />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Contact Sync</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    </div>
+                    <input
+                      type="tel"
+                      value={formData.phone || ''}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Base Location</label>
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Base Location</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.location || ''}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                      placeholder="E.G. NEW YORK, USA"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Work Paradigm</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <select
+                      value={formData.workMode || 'WFO'}
+                      onChange={(e) => setFormData({ ...formData, workMode: e.target.value as any })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                    >
+                      <option value="WFO">OFFICE-BASED</option>
+                      <option value="WFH">REMOTE-FIRST</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Engage Date</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <input
+                      type="date"
+                      value={formData.joiningDate}
+                      onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 group">
+                <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">{editingEmployee ? 'Reset Security Key' : 'Security Key'}</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  </div>
                   <input
-                    type="text"
-                    value={formData.location || ''}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 outline-none transition-all dark:text-slate-100"
+                    type="password"
+                    value={formData.password || ''}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    placeholder={editingEmployee ? "LEAVE EMPTY TO KEEP CURRENT" : "••••••••"}
+                    required={!editingEmployee}
+                    minLength={6}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Work Paradigm</label>
-                  <select
-                    value={formData.workMode || 'WFO'}
-                    onChange={(e) => setFormData({ ...formData, workMode: e.target.value as any })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest outline-none dark:text-slate-200 dark:bg-slate-900"
-                  >
-                    <option value="WFO">Office-Based</option>
-                    <option value="WFH">Remote-First</option>
-                  </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Organizational Role</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <select
+                      value={selectedRole}
+                      onChange={handleRoleChange}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                    >
+                      <option value="Developer">DEVELOPER</option>
+                      <option value="Designer">DESIGNER</option>
+                      <option value="Manager">MANAGER</option>
+                      <option value="Marketing">MARKETING</option>
+                      <option value="CUSTOM_TRIGGER">+ SPECIAL ROLE</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Engage Date</label>
-                  <input
-                    type="date"
-                    value={formData.joiningDate}
-                    onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-1.5 text-[11px] font-bold outline-none dark:text-slate-200 dark:bg-slate-900"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">{editingEmployee ? 'Reset Security Key' : 'Security Key'}</label>
-                <input
-                  type="password"
-                  value={formData.password || ''}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-bold focus:bg-white dark:focus:bg-slate-900 outline-none transition-all dark:text-slate-100"
-                  placeholder={editingEmployee ? "UNTOUCHED" : "••••••••"}
-                  required={!editingEmployee}
-                  minLength={6}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Organizational Role</label>
-                  <select
-                    value={selectedRole}
-                    onChange={handleRoleChange}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest outline-none dark:text-slate-200 dark:bg-slate-900"
-                  >
-                    <option value="Developer">Developer</option>
-                    <option value="Designer">Designer</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="CUSTOM_TRIGGER">+ Special</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Deployment Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-lg px-3 py-2 text-[11px] font-black uppercase tracking-widest outline-none dark:text-slate-200 dark:bg-slate-900"
-                  >
-                    <option value="Active">Operational</option>
-                    <option value="On Leave">Standby</option>
-                    <option value="Terminated">Decommissioned</option>
-                  </select>
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest ml-0.5">Deployment Status</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                      className="w-full border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 rounded-xl pl-10 pr-4 py-2.5 text-[12px] font-black text-slate-900 dark:text-white focus:border-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                    >
+                      <option value="Active">OPERATIONAL</option>
+                      <option value="On Leave">STANDBY</option>
+                      <option value="Terminated">DECOMMISSIONED</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -534,12 +600,13 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Confirmation Modal */}
-      {deletingId && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[120] p-4 animate-in fade-in duration-300">
+      {deletingId && createPortal(
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-300">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300 p-6 border border-slate-200 dark:border-slate-800">
             <div className="w-12 h-12 bg-rose-500/10 text-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -551,7 +618,8 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
               <button onClick={confirmDelete} className="flex-1 px-4 py-2 bg-rose-600 text-white font-black text-[10px] uppercase rounded-lg shadow-lg shadow-rose-500/20 hover:bg-rose-700 transition-all active:scale-95">Proceed</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

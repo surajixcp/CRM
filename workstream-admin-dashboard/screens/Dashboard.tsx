@@ -8,9 +8,13 @@ import { attendanceService } from '../src/api/attendanceService';
 import { leaveService, LeaveRequest } from '../src/api/leaveService';
 import { holidayService } from '../src/api/holidayService';
 import { meetingService } from '../src/api/meetingService';
-import { Holiday, Meeting } from '../types';
+import { Holiday, Meeting, ScreenType } from '../types';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigate?: (screen: ScreenType) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly'>('weekly');
   const [metric, setMetric] = useState<'actual' | 'overtime'>('actual');
 
@@ -19,31 +23,28 @@ const Dashboard: React.FC = () => {
     totalEmployees: 0,
     present: 0,
     absent: 0,
-    onLeave: 0
+    onLeave: 0,
+    halfDay: 0
   });
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
 
-  // Chart Data State (initialized with empty or zeroed data)
+  // Chart Data State
   const [attendanceChartData, setAttendanceChartData] = useState<any[]>([
-    { name: 'Mon', actual: 0, target: 98, overtime: 0 },
-    { name: 'Tue', actual: 0, target: 98, overtime: 0 },
-    { name: 'Wed', actual: 0, target: 98, overtime: 0 },
-    { name: 'Thu', actual: 0, target: 98, overtime: 0 },
-    { name: 'Fri', actual: 0, target: 98, overtime: 0 },
-    { name: 'Sat', actual: 0, target: 45, overtime: 0 },
-    { name: 'Sun', actual: 0, target: 35, overtime: 0 }
+    { name: 'Mon', actual: 0, overtime: 0 },
+    { name: 'Tue', actual: 0, overtime: 0 },
+    { name: 'Wed', actual: 0, overtime: 0 },
+    { name: 'Thu', actual: 0, overtime: 0 },
+    { name: 'Fri', actual: 0, overtime: 0 },
+    { name: 'Sat', actual: 0, overtime: 0 },
+    { name: 'Sun', actual: 0, overtime: 0 }
   ]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const fetchDashboardData = async () => {
     try {
       // 1. Fetch Summary Stats
-      const summary = await attendanceService.getSummary(); // { totalEmployees, present, absent }
+      const summary = await attendanceService.getSummary(); // { totalEmployees, present, absent, halfDay }
 
       // 2. Fetch Recently Pending Leaves
       const allLeaves: any[] = await leaveService.getAllLeaves();
@@ -54,16 +55,19 @@ const Dashboard: React.FC = () => {
       today.setHours(0, 0, 0, 0);
       const onLeaveCount = allLeaves.filter(l => {
         if (l.status !== 'approved') return false;
-        // Backend uses startDate/endDate usually, or dailyAttendance logic
-        // For Dashboard, we'll just check if current user is check-inable
-        return false; // Simplified for now to avoid crash
+        const start = new Date(l.startDate);
+        const end = new Date(l.endDate);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        return today >= start && today <= end;
       }).length;
 
       setStats({
         totalEmployees: summary.totalEmployees,
         present: summary.present,
-        absent: summary.absent - onLeaveCount, // Adjust absent count? Or just trust summary?
-        onLeave: onLeaveCount
+        absent: summary.absent,
+        onLeave: typeof summary.onLeave === 'number' ? summary.onLeave : onLeaveCount,
+        halfDay: summary.halfDay
       });
       setLeaves(pendingLeaves);
 
@@ -115,30 +119,38 @@ const Dashboard: React.FC = () => {
     ? Math.round((stats.present / stats.totalEmployees) * 100)
     : 0;
 
+  useEffect(() => {
+    fetchDashboardData();
+    // Refresh every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="space-y-5">
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
-          { label: 'Total Workforce', value: stats.totalEmployees, sub: 'Active Employees', color: 'from-blue-600 to-indigo-700', icon: <Icons.Search className="w-4 h-4" /> },
-          { label: 'Present Today', value: stats.present, sub: `${activePercentage}% Attendance`, color: 'from-emerald-500 to-teal-600', icon: <Icons.Search className="w-4 h-4" /> },
-          { label: 'Absent Today', value: stats.absent, sub: 'Needs Review', color: 'from-rose-500 to-pink-600', icon: <Icons.Search className="w-4 h-4" /> },
-          { label: 'On Leave Today', value: stats.onLeave, sub: 'Planned Absence', color: 'from-amber-500 to-orange-600', icon: <Icons.Search className="w-4 h-4" /> }
+          { label: 'Total Workforce', value: stats.totalEmployees, sub: 'Active', color: 'from-blue-600 to-indigo-700', icon: <Icons.Employees className="w-4 h-4" /> },
+          { label: 'Present Today', value: stats.present, sub: `${activePercentage}% Rate`, color: 'from-emerald-500 to-teal-600', icon: <Icons.Check className="w-4 h-4" /> },
+          { label: 'Half Day', value: stats.halfDay, sub: '0.5 Day Shift', color: 'from-violet-500 to-purple-600', icon: <Icons.Attendance className="w-4 h-4" /> },
+          { label: 'Absent Today', value: stats.absent, sub: 'Needs Review', color: 'from-rose-500 to-pink-600', icon: <Icons.EyeOff className="w-4 h-4" /> },
+          { label: 'On Leave Today', value: stats.onLeave, sub: 'Planned', color: 'from-amber-500 to-orange-600', icon: <Icons.Leaves className="w-4 h-4" /> }
         ].map((stat) => (
           <div
             key={stat.label}
-            className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group overflow-hidden relative"
+            className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-3.5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group overflow-hidden relative aspect-square flex flex-col justify-between"
           >
-            <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br opacity-[0.03] dark:opacity-[0.07] rounded-bl-full transform translate-x-4 -translate-y-4 group-hover:scale-150 transition-transform duration-500 from-blue-500 to-indigo-600"></div>
+            <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br opacity-[0.03] dark:opacity-[0.07] rounded-bl-full transform translate-x-2 -translate-y-2 group-hover:scale-150 transition-transform duration-500 from-blue-500 to-indigo-600"></div>
             <div className="flex justify-between items-start relative z-10">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.label}</p>
-                <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</h3>
-                <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{stat.sub}</p>
-              </div>
-              <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.color} text-white shadow-lg shadow-blue-500/10`}>
+              <div className={`p-2 rounded-xl bg-gradient-to-br ${stat.color} text-white shadow-lg shadow-blue-500/10`}>
                 {stat.icon}
               </div>
+            </div>
+            <div className="space-y-0.5 relative z-10">
+              <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.label}</p>
+              <h3 className="text-xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</h3>
+              <p className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{stat.sub}</p>
             </div>
           </div>
         ))}
@@ -278,20 +290,25 @@ const Dashboard: React.FC = () => {
           <div className="flex justify-between items-center mb-5">
             <div>
               <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Urgent Approvals</h3>
-              <p className="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-0.5">Requires Action</p>
+              <p className="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-0.5">{leaves.length} Requires Action</p>
             </div>
-            <button className="text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all border border-blue-100 dark:border-blue-500/20 shadow-sm">Review Queue</button>
+            <button
+              onClick={() => onNavigate?.('Leaves')}
+              className="text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all border border-blue-100 dark:border-blue-500/20 shadow-sm"
+            >
+              Review Queue
+            </button>
           </div>
           <div className="space-y-2">
             {leaves.length > 0 ? leaves.map((leave) => (
-              <div key={leave.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group cursor-pointer">
+              <div key={leave._id} onClick={() => onNavigate?.('Leaves')} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group cursor-pointer">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-white dark:bg-slate-900 rounded-lg flex items-center justify-center font-black text-[10px] text-blue-600 dark:text-blue-400 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-800 overflow-hidden uppercase">
-                    {(leave.employeeName || '?')[0]}
+                    {(leave.user?.name || '?')[0]}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-black text-slate-800 dark:text-slate-200 truncate uppercase tracking-tight">{leave.employeeName}</p>
-                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black tracking-widest uppercase">{leave.type}</p>
+                    <p className="text-[11px] font-black text-slate-800 dark:text-slate-200 truncate uppercase tracking-tight">{leave.user?.name}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black tracking-widest uppercase">{leave.leaveType}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -320,7 +337,7 @@ const Dashboard: React.FC = () => {
                 <div key={holiday.id} className="flex items-center space-x-3 group cursor-pointer p-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all">
                   <div className="w-9 h-9 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex flex-col items-center justify-center rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all border border-indigo-100 dark:border-indigo-500/20 shadow-sm shrink-0">
                     <span className="text-[7px] font-black uppercase tracking-tighter opacity-70">{new Date(holiday.date).toLocaleString('default', { month: 'short' })}</span>
-                    <span className="text-sm font-black leading-none">{holiday.date.split('-')[2]}</span>
+                    <span className="text-sm font-black leading-none">{new Date(holiday.date).getDate()}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">{holiday.name}</p>
@@ -340,11 +357,11 @@ const Dashboard: React.FC = () => {
             <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-5">Team Sync</h3>
             <div className="space-y-3">
               {meetings.length > 0 ? meetings.map((meeting) => (
-                <div key={meeting.id} className="relative pl-4 border-l-2 border-blue-500 group cursor-pointer hover:bg-slate-50 dark:hover:bg-blue-500/10 py-2 px-2 rounded-r-xl transition-all">
+                <div key={meeting.id} className="relative pl-4 border-l-2 border-blue-500 group cursor-pointer hover:bg-slate-50 dark:hover:bg-blue-500/10 py-2.5 px-3 rounded-r-xl transition-all">
                   <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{meeting.title}</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="w-1 h-1 rounded-full bg-blue-500"></span>
-                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">{meeting.time} • {meeting.attendees?.length || 0} Members</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    <p className="text-[9px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-widest">{meeting.time} • {meeting.attendees?.length || 0} Members</p>
                   </div>
                 </div>
               )) : (

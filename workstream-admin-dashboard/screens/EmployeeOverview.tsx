@@ -111,25 +111,29 @@ const EmployeeOverview: React.FC<EmployeeOverviewProps> = ({ userId, onBack }) =
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-7 gap-4">
                 {[
-                    { label: 'Present', value: overviewData.attendanceStats.present, color: 'emerald', Icon: Icons.Check },
-                    { label: 'Absent', value: overviewData.attendanceStats.absent, color: 'rose', Icon: Icons.EyeOff },
-                    { label: 'Late', value: overviewData.attendanceStats.late, color: 'amber', Icon: Icons.Bell },
-                    { label: 'Leaves', value: overviewData.attendanceStats.leave, color: 'blue', Icon: Icons.Leaves },
-                    { label: 'Holidays', value: overviewData.attendanceStats.holiday, color: 'purple', Icon: Icons.Holidays },
-                    { label: 'Weekends', value: overviewData.attendanceStats.weekend, color: 'slate', Icon: Icons.ArrowRight },
+                    { label: 'Present', value: overviewData.attendanceStats.present, sub: 'Full Shift', color: 'emerald', Icon: Icons.Check },
+                    { label: 'Absent', value: overviewData.attendanceStats.absent, sub: 'No Show', color: 'rose', Icon: Icons.EyeOff },
+                    { label: 'Half Day', value: overviewData.attendanceStats.halfDay, sub: '0.5 Day', color: 'indigo', Icon: Icons.Attendance },
+                    { label: 'Late', value: overviewData.attendanceStats.late, sub: 'Delayed', color: 'amber', Icon: Icons.Bell },
+                    { label: 'Leaves', value: overviewData.attendanceStats.leave, sub: 'Approved', color: 'blue', Icon: Icons.Leaves },
+                    { label: 'Holidays', value: overviewData.attendanceStats.holiday, sub: 'Public', color: 'purple', Icon: Icons.Holidays },
+                    { label: 'Weekends', value: overviewData.attendanceStats.weekend, sub: 'Off Days', color: 'slate', Icon: Icons.ArrowRight },
                 ].map((stat, i) => (
-                    <div key={i} className={`p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-100/30 dark:shadow-none transition-all hover:scale-105 hover:border-${stat.color}-500 group-hover:z-20`}>
-                        <div className="flex justify-between items-start mb-4">
-                            <p className={`text-[10px] font-black text-${stat.color}-600 dark:text-${stat.color}-400 uppercase tracking-widest`}>{stat.label}</p>
-                            <div className={`text-${stat.color}-500 opacity-30 group-hover:opacity-100 transition-opacity`}>
-                                <stat.Icon className="w-4 h-4" />
+                    <div key={i} className={`p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:border-${stat.color}-500 group flex flex-col justify-between aspect-square`}>
+                        <div className="flex justify-between items-start">
+                            <p className={`text-[8px] font-black text-${stat.color}-500 uppercase tracking-widest`}>{stat.label}</p>
+                            <div className={`text-${stat.color}-500 opacity-20 group-hover:opacity-100 transition-opacity`}>
+                                <stat.Icon className="w-3 h-3" />
                             </div>
                         </div>
-                        <p className={`text-3xl font-black text-slate-900 dark:text-white`}>{stat.value}</p>
-                        <div className="mt-4 h-1 w-8 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                            <div className={`h-full bg-${stat.color}-500`} style={{ width: '40%' }}></div>
+                        <div>
+                            <p className={`text-2xl font-black text-slate-800 dark:text-white mt-1`}>{stat.value}</p>
+                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter">{stat.sub}</p>
+                            <div className="mt-2 h-1 w-full bg-slate-50 dark:bg-slate-800/50 rounded-full overflow-hidden">
+                                <div className={`h-full bg-${stat.color}-500`} style={{ width: '30%' }}></div>
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -245,6 +249,81 @@ const EmployeeOverview: React.FC<EmployeeOverviewProps> = ({ userId, onBack }) =
                         <div className="w-24 h-24 rounded-[2rem] bg-white/5 backdrop-blur-2xl flex items-center justify-center border border-white/10 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
                             <Icons.Salary className="w-10 h-10 text-blue-400" />
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Detailed Activity Table */}
+            <div className="space-y-4">
+                <div className="flex items-center justify-between px-2">
+                    <h5 className="text-[12px] font-black text-slate-900 dark:text-white uppercase tracking-[0.1em]">Intelligence Registry</h5>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Detailed Operational Logs</span>
+                </div>
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] overflow-hidden shadow-xl shadow-slate-100/50 dark:shadow-none">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-8 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                                    <th className="px-8 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                                    <th className="px-8 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest">Log Summary</th>
+                                    <th className="px-8 py-5 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                {overviewData.attendanceLogs.map((log: any, idx: number) => (
+                                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                                        <td className="px-8 py-4 whitespace-nowrap">
+                                            <p className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-tight">
+                                                {new Date(log.date).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </p>
+                                        </td>
+                                        <td className="px-8 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border ${log.status === 'present' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                                        log.status === 'absent' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
+                                                            log.status === 'half_day' ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' :
+                                                                log.status === 'late' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                                                    'bg-slate-500/10 text-slate-500 border-slate-500/20'
+                                                    }`}>
+                                                    {log.status.replace('_', ' ')}
+                                                </span>
+                                                {log.status === 'half_day' || log.leaveDuration === 0.5 ? (
+                                                    <span className="text-[7px] font-black text-indigo-500 uppercase tracking-tighter bg-indigo-50 dark:bg-indigo-500/10 px-1.5 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-500/20">
+                                                        0.5 Day
+                                                    </span>
+                                                ) : null}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2">
+                                                {log.leaveType && (
+                                                    <span className="px-2 py-0.5 bg-blue-500/5 text-blue-500 border border-blue-500/10 rounded-md text-[8px] font-black uppercase tracking-widest">
+                                                        {log.leaveType}
+                                                    </span>
+                                                )}
+                                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-tight">
+                                                    {log.checkIn ? `${new Date(log.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '-'}
+                                                    {log.checkOut ? ` → ${new Date(log.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-4 whitespace-nowrap text-right">
+                                            <p className="text-[11px] font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                                                {log.workingHours || '0.00'} <span className="text-[8px] text-slate-400 font-bold opacity-50 ml-0.5">HRS</span>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {overviewData.attendanceLogs.length === 0 && (
+                                    <tr>
+                                        <td colSpan={4} className="px-8 py-10 text-center">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">No detailed telemetry discovered for this period</p>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -22,10 +22,11 @@ const Attendance: React.FC = () => {
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     fetchLogs();
-  }, [startDate]); // Fetch on mount and date change. Maybe add debounce or explicit button.
+  }, [startDate, endDate]); // Fetch on date change
 
   const fetchLogs = async () => {
     try {
@@ -36,8 +37,23 @@ const Attendance: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
-    alert('Export functionality coming soon!');
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await attendanceService.exportAttendance({ startDate, endDate });
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Attendance_Register_${startDate}_to_${endDate}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Failed to export registry', error);
+      alert('Failed to export attendance registry');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -73,10 +89,15 @@ const Attendance: React.FC = () => {
 
           <button
             onClick={handleExport}
-            className="flex items-center justify-center bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2.5 rounded-lg font-black text-[9px] uppercase tracking-widest shadow-sm transition-all active:scale-95 group shrink-0"
+            disabled={isExporting}
+            className="flex items-center justify-center bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/50 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2.5 rounded-lg font-black text-[9px] uppercase tracking-widest shadow-sm transition-all active:scale-95 group shrink-0 disabled:opacity-50"
           >
-            <Icons.Download className="w-3 h-3 mr-1.5 group-hover:-translate-y-0.5 transition-transform" />
-            <span>Export Registry</span>
+            {isExporting ? (
+              <div className="w-3 h-3 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mr-1.5"></div>
+            ) : (
+              <Icons.Download className="w-3 h-3 mr-1.5 group-hover:-translate-y-0.5 transition-transform" />
+            )}
+            <span>{isExporting ? 'Exporting...' : 'Export Register'}</span>
           </button>
         </div>
 
@@ -135,12 +156,13 @@ const Attendance: React.FC = () => {
                   <td className="px-5 py-3 whitespace-nowrap text-right">
                     <div className="flex flex-col items-end gap-1">
                       <span className={`inline-flex px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md ${record.status === 'present' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20' :
-                          record.status === 'absent' ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20' :
-                            record.status === 'leave' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20' :
+                        record.status === 'absent' ? 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20' :
+                          record.status === 'leave' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20' :
+                            record.status === 'half_day' ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20' :
                               record.status === 'unpaid_leave' ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20' :
                                 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-100 dark:border-slate-700'
                         }`}>
-                        {record.status}
+                        {record.status.replace('_', ' ')}
                       </span>
                       {(record.status === 'leave' || record.status === 'unpaid_leave') && record.leaveType && (
                         <span className="text-[7px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tighter">

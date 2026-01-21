@@ -21,7 +21,7 @@ const AUTH_KEY = 'workstream_auth_session';
 const App: React.FC = () => {
   // Initialize state from localStorage if available
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem(AUTH_KEY) === 'true';
+    return localStorage.getItem(AUTH_KEY) === 'true' || sessionStorage.getItem(AUTH_KEY) === 'true';
   });
 
   const [activeScreen, setActiveScreen] = useState<ScreenType>('Dashboard');
@@ -53,6 +53,12 @@ const App: React.FC = () => {
     // Simulate session clear with a brief delay for a better UX feeling
     setTimeout(() => {
       localStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+
       setIsAuthenticated(false);
       setIsLoggingOut(false);
       setActiveScreen('Dashboard');
@@ -84,7 +90,7 @@ const App: React.FC = () => {
 
   const renderScreen = () => {
     switch (activeScreen) {
-      case 'Dashboard': return <DashboardScreen />;
+      case 'Dashboard': return <DashboardScreen onNavigate={handleNavigate} />;
       case 'Employees': return <EmployeesScreen onNavigate={handleNavigate} />;
       case 'Attendance': return <AttendanceScreen />;
       case 'Leaves': return <LeavesScreen />;

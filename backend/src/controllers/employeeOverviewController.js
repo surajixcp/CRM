@@ -28,10 +28,11 @@ const getEmployeeOverview = async (req, res) => {
         });
 
         const attendanceStats = {
-            present: attendanceLogs.filter(l => l.status === 'present' || l.status === 'late').length,
+            present: attendanceLogs.filter(l => l.status === 'present').length,
             absent: attendanceLogs.filter(l => l.status === 'absent').length,
             late: attendanceLogs.filter(l => l.status === 'late').length,
-            leave: attendanceLogs.filter(l => l.status === 'leave').length,
+            halfDay: attendanceLogs.filter(l => l.status === 'half_day' || l.leaveDuration === 0.5).length,
+            leave: attendanceLogs.filter(l => l.status === 'leave' && (l.leaveDuration === 1 || !l.leaveDuration)).length,
             holiday: attendanceLogs.filter(l => l.status === 'holiday').length,
             weekend: attendanceLogs.filter(l => l.status === 'weekend').length
         };
@@ -61,6 +62,7 @@ const getEmployeeOverview = async (req, res) => {
         res.json({
             profile: user,
             attendanceStats,
+            attendanceLogs: attendanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date)),
             leaveBreakdown,
             projects,
             recentSalary
