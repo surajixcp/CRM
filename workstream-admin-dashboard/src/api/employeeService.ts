@@ -118,5 +118,10 @@ export const employeeService = {
     deleteEmployee: async (id: string) => {
         const response = await api.delete(`/auth/users/${id}`);
         return response.data;
+    },
+
+    getEmployeeOverview: async (userId: string) => {
+        const response = await api.get(`/auth/user-overview/${userId}`);
+        return response.data;
     }
 };

@@ -22,6 +22,7 @@ import {
 import { Screen, UserProfile, AppNotification } from './types';
 import { authService } from './services/authService';
 import { settingService } from './services/settingService';
+import { ThemeToggle } from './components/ThemeToggle';
 
 // Screen Components
 import DashboardScreen from './screens/DashboardScreen';
@@ -153,7 +154,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-white dark:bg-[#020617] flex text-slate-900 dark:text-slate-100 transition-colors duration-300 font-inter">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && window.innerWidth < 1024 && (
         <div
@@ -164,12 +165,12 @@ const App: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] w-64 bg-white border-r border-slate-100 transform transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-[70] w-52 bg-white dark:bg-slate-950/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-800/50 transform transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-xl lg:shadow-none' : '-translate-x-full'
           }`}
       >
         <div className="h-full flex flex-col">
-          <div className="px-6 h-20 flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-100 group cursor-pointer active-scale overflow-hidden">
+          <div className="px-5 h-12 flex items-center gap-2.5 shrink-0 border-b border-slate-100 dark:border-slate-800/50">
+            <div className="w-6 h-6 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20 group cursor-pointer active:scale-95 transition-all overflow-hidden shrink-0">
               {companySettings.logo ? (
                 <img src={companySettings.logo} alt="L" className="w-full h-full object-cover" />
               ) : (
@@ -177,40 +178,33 @@ const App: React.FC = () => {
               )}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-lg font-black tracking-tight text-slate-900 leading-none truncate">{companySettings.name}</span>
-              <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-1">Enterprise</span>
+              <span className="text-xs font-black tracking-tight text-slate-800 dark:text-white leading-none truncate">{companySettings.name}</span>
+              <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Enterprise</span>
             </div>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto mt-4 scrollbar-hide">
+          <nav className="flex-1 px-2.5 space-y-0.5 overflow-y-auto mt-4 scrollbar-hide">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleScreenChange(item.id as Screen)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all relative active-scale group ${currentScreen === item.id
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 nav-active'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[11px] font-bold transition-all relative active:scale-[0.98] group ${currentScreen === item.id
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-white'
                   }`}
               >
-                <item.icon className={`w-5 h-5 transition-transform ${currentScreen === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
+                <item.icon className={`w-4 h-4 transition-transform ${currentScreen === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
                 {item.label}
               </button>
             ))}
           </nav>
 
-          <div className="p-4 mt-auto space-y-2 shrink-0">
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 hidden lg:block">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Platform Status</span>
-              </div>
-              <p className="text-[11px] font-bold text-slate-600">All systems operational.</p>
-            </div>
+          <div className="p-2.5 mt-auto space-y-1 shrink-0 border-t border-slate-100 dark:border-slate-800/50">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-50 transition-all active-scale group"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[11px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all active:scale-95 group"
             >
-              <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+              <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               Logout
             </button>
           </div>
@@ -218,37 +212,39 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Container */}
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-52' : 'ml-0'}`}>
         {/* Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 px-4 md:px-10 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3 md:gap-4">
+        <header className="h-11 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/50 sticky top-0 z-50 px-4 flex items-center justify-between shrink-0 transition-colors duration-300">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 lg:hidden transition-colors active-scale"
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-colors active:scale-95"
             >
-              {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isSidebarOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
             </button>
             <div className="flex flex-col">
-              <h1 className="text-lg md:text-xl font-black text-slate-900 tracking-tight transition-all truncate max-w-[120px] md:max-w-none">
+              <h1 className="text-sm font-bold text-slate-800 dark:text-white tracking-tight transition-all truncate max-w-[120px] md:max-w-none">
                 {currentScreen}
               </h1>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">{companySettings.name} Pro</span>
-                <span className="hidden md:inline w-1 h-1 rounded-full bg-slate-300" />
-                <span className="hidden md:inline text-[10px] font-bold text-indigo-500 uppercase tracking-widest">v2.4.0</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{companySettings.name} Pro</span>
+                <span className="hidden md:inline w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                <span className="hidden md:inline text-[8px] font-bold text-indigo-500 uppercase tracking-widest">v2.4.0</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-5">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden sm:flex items-center relative group">
-              <Search className="w-4 h-4 absolute left-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+              <Search className="w-3 h-3 absolute left-3 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Search resources..."
-                className="pl-11 pr-4 py-2.5 bg-slate-50 border border-transparent rounded-2xl text-sm font-medium focus:bg-white focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 w-40 md:w-80 transition-all outline-none"
+                className="pl-8 pr-3 py-1.5 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg text-[10px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 w-32 md:w-56 transition-all outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
               />
             </div>
+
+            <ThemeToggle />
 
             {/* Notification Center */}
             <div className="relative">
@@ -257,61 +253,61 @@ const App: React.FC = () => {
                   setIsNotificationsOpen(!isNotificationsOpen);
                   setIsProfileMenuOpen(false);
                 }}
-                className={`p-2.5 rounded-2xl text-slate-500 hover:bg-slate-100 relative transition-all active-scale ${isNotificationsOpen ? 'bg-indigo-50 text-indigo-600 shadow-inner' : ''}`}
+                className={`p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-all active:scale-95 ${isNotificationsOpen ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : ''}`}
               >
-                <Bell className="w-5.5 h-5.5" />
+                <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white animate-live-pulse"></span>
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full border border-white dark:border-slate-900"></span>
                 )}
               </button>
 
               {isNotificationsOpen && (
                 <>
                   <div className="fixed inset-0 z-[80]" onClick={() => setIsNotificationsOpen(false)} />
-                  <div className="absolute right-0 mt-4 w-[280px] sm:w-[420px] bg-white rounded-[24px] shadow-premium border border-slate-100 overflow-hidden z-[90] animate-scale-in">
-                    <div className="p-5 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                  <div className="absolute right-0 mt-3 w-64 sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-[90] animate-scale-in">
+                    <div className="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
                       <div>
-                        <h3 className="font-black text-slate-900 text-lg tracking-tight">Activity Center</h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Updates & Tasks</p>
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-xs tracking-tight">Activity Center</h3>
+                        <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Updates & Tasks</p>
                       </div>
                       {unreadCount > 0 && (
                         <button
                           onClick={markAllAsRead}
-                          className="text-xs font-black text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-lg active-scale"
+                          className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-lg active:scale-95 transition-all"
                         >
                           Clear
                         </button>
                       )}
                     </div>
-                    <div className="max-h-[350px] overflow-y-auto">
+                    <div className="max-h-[280px] overflow-y-auto">
                       {notifications.length > 0 ? (
                         notifications.map((n) => (
                           <div
                             key={n.id}
                             onClick={() => markAsRead(n.id)}
-                            className={`p-4 md:p-5 border-b border-slate-50 flex gap-4 cursor-pointer hover:bg-slate-50/80 transition-all group ${!n.read ? 'bg-indigo-50/10' : ''}`}
+                            className={`p-3 border-b border-slate-100 dark:border-slate-800 flex gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all group ${!n.read ? 'bg-indigo-50/30 dark:bg-indigo-500/5' : ''}`}
                           >
-                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-[16px] md:rounded-[18px] flex items-center justify-center shrink-0 shadow-soft transition-transform group-hover:scale-110 ${n.type === 'meeting' ? 'bg-amber-100 text-amber-600' :
-                              n.type === 'leave' ? 'bg-emerald-100 text-emerald-600' :
-                                'bg-indigo-100 text-indigo-600'
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${n.type === 'meeting' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                              n.type === 'leave' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
+                                'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
                               }`}>
-                              {n.type === 'meeting' ? <Clock className="w-5 h-5 md:w-6 md:h-6" /> :
-                                n.type === 'leave' ? <Calendar className="w-5 h-5 md:w-6 md:h-6" /> :
-                                  <ProjectIcon className="w-5 h-5 md:w-6 md:h-6" />}
+                              {n.type === 'meeting' ? <Clock className="w-3.5 h-3.5" /> :
+                                n.type === 'leave' ? <Calendar className="w-3.5 h-3.5" /> :
+                                  <ProjectIcon className="w-3.5 h-3.5" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex justify-between items-start mb-1">
-                                <h4 className={`text-xs md:text-sm font-black truncate tracking-tight ${!n.read ? 'text-slate-900' : 'text-slate-700'}`}>{n.title}</h4>
-                                <span className="text-[9px] md:text-[10px] font-bold text-slate-400 whitespace-nowrap ml-2 bg-slate-100 px-2 py-0.5 rounded-full">{n.time}</span>
+                              <div className="flex justify-between items-start mb-0.5">
+                                <h4 className={`text-[11px] font-bold truncate tracking-tight ${!n.read ? 'text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-400'}`}>{n.title}</h4>
+                                <span className="text-[8px] font-bold text-slate-400 whitespace-nowrap ml-2 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full">{n.time}</span>
                               </div>
-                              <p className={`text-[11px] md:text-xs leading-relaxed font-medium ${!n.read ? 'text-slate-600' : 'text-slate-500'}`}>{n.message}</p>
+                              <p className={`text-[10px] leading-normal font-medium ${!n.read ? 'text-slate-600 dark:text-slate-300' : 'text-slate-500 dark:text-slate-500'}`}>{n.message}</p>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="py-16 flex flex-col items-center justify-center text-center px-10">
-                          <Bell className="w-10 h-10 text-slate-200 mb-3" />
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No activity</p>
+                        <div className="py-10 flex flex-col items-center justify-center text-center px-8">
+                          <Bell className="w-6 h-6 text-slate-200 dark:text-slate-800 mb-2" />
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">No activity</p>
                         </div>
                       )}
                     </div>
@@ -327,41 +323,41 @@ const App: React.FC = () => {
                   setIsProfileMenuOpen(!isProfileMenuOpen);
                   setIsNotificationsOpen(false);
                 }}
-                className={`flex items-center gap-3 p-1 rounded-full md:rounded-[20px] md:pl-3.5 hover:bg-slate-50 transition-all border border-transparent active-scale ${isProfileMenuOpen ? 'bg-white border-slate-100 shadow-soft' : ''}`}
+                className={`flex items-center gap-2 p-1 rounded-xl md:pl-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-transparent active:scale-95 ${isProfileMenuOpen ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-xl' : ''}`}
               >
                 <div className="text-right hidden md:block">
-                  <p className="text-sm font-black text-slate-900 leading-none">{user?.name || 'User'}</p>
-                  <p className="text-[10px] font-bold text-indigo-500 mt-1 uppercase tracking-widest">{user?.department || 'Employee'}</p>
+                  <p className="text-[11px] font-black text-slate-800 dark:text-slate-100 leading-none">{user?.name || 'User'}</p>
+                  <p className="text-[8px] font-bold text-indigo-500 mt-1 uppercase tracking-widest leading-none">{user?.department || 'Employee'}</p>
                 </div>
                 <div className="relative">
                   <img
                     src={user?.avatar || 'https://ui-avatars.com/api/?name=' + (user?.name || 'User')}
                     alt="Profile"
-                    className="w-9 h-9 md:w-10 md:h-10 rounded-full md:rounded-[16px] object-cover border-2 border-white shadow-soft ring-1 ring-slate-100"
+                    className="w-7 h-7 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shadow-sm"
                   />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-white dark:border-slate-900 rounded-full" />
                 </div>
-                <ChevronDown className={`hidden md:block w-4 h-4 text-slate-400 transition-transform duration-500 ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`hidden md:block w-3 h-3 text-slate-400 transition-transform duration-500 ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isProfileMenuOpen && (
                 <>
                   <div className="fixed inset-0 z-[80]" onClick={() => setIsProfileMenuOpen(false)} />
-                  <div className="absolute right-0 mt-4 w-56 bg-white rounded-[24px] shadow-premium border border-slate-100 py-3 z-[90] animate-scale-in">
-                    <button className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-bold group">
-                      <Settings className="w-4.5 h-4.5 text-slate-400 group-hover:rotate-45 transition-transform" />
+                  <div className="absolute right-0 mt-3 w-44 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 py-1.5 z-[90] animate-scale-in">
+                    <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
+                      <Settings className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-45 transition-transform" />
                       Settings
                     </button>
-                    <button className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-bold group">
-                      <HelpCircle className="w-4.5 h-4.5 text-slate-400" />
+                    <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
+                      <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
                       Support
                     </button>
-                    <hr className="my-2 border-slate-50 mx-4" />
+                    <hr className="my-1 border-slate-100 dark:border-slate-800 mx-2" />
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-rose-600 hover:bg-rose-50 font-black transition-colors"
+                      className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-black transition-colors"
                     >
-                      <LogOut className="w-4.5 h-4.5" />
+                      <LogOut className="w-3.5 h-3.5" />
                       Sign Out
                     </button>
                   </div>
@@ -372,8 +368,8 @@ const App: React.FC = () => {
         </header>
 
         {/* Dynamic Content */}
-        <main className={`flex-1 p-4 md:p-8 lg:p-10 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
-          <div className="animate-fade-in-up max-w-[1600px] mx-auto">
+        <main className={`flex-1 p-3 md:p-5 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
+          <div className="max-w-[1600px] mx-auto">
             {renderScreen()}
           </div>
         </main>

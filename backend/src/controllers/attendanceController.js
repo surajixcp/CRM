@@ -141,7 +141,7 @@ const getMonthlyAttendance = async (req, res) => {
         return;
     }
 
-    const { month, year } = req.query; // Expects ?month=1&year=2024
+    const { month, year } = req.query;
 
     if (!month || !year) {
         res.status(400).json({ message: 'Please provide month and year' });
@@ -154,7 +154,105 @@ const getMonthlyAttendance = async (req, res) => {
     const attendanceList = await Attendance.find({
         user: req.params.userId,
         date: { $gte: startDate, $lte: endDate }
+    }).sort({ date: 1 });
+
+    // Fetch Holidays for this period
+    const Holiday = require('../models/Holiday');
+    const holidays = await Holiday.find({
+        date: { $gte: startDate, $lte: endDate }
     });
+
+    // Merge holidays into attendance list if no log exists
+    holidays.forEach(h => {
+        const hDate = new Date(h.date);
+        hDate.setHours(0, 0, 0, 0);
+
+        const hasLog = attendanceList.some(a => {
+            const d = new Date(a.date);
+            d.setHours(0, 0, 0, 0);
+            return d.getTime() === hDate.getTime();
+        });
+
+        if (!hasLog) {
+            attendanceList.push({
+                user: req.params.userId,
+                date: h.date,
+                status: 'holiday',
+                leaveType: h.name, // Use holiday name as leaveType if helpful
+                isMissingRecord: true
+            });
+        }
+    });
+
+    attendanceList.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Proactive detection for "Today" if it falls within the month/year
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (today >= startDate && today <= endDate) {
+        // Fetch user to check joining date
+        const User = require('../models/User');
+        const user = await User.findById(req.params.userId).select('joiningDate');
+
+        const jDate = user && user.joiningDate ? new Date(user.joiningDate) : null;
+        if (jDate) jDate.setHours(0, 0, 0, 0);
+
+        // Skip if today is before joining person
+        if (jDate && today < jDate) {
+            return res.json(attendanceList);
+        }
+
+        const hasTodayRecord = attendanceList.some(a => {
+            const d = new Date(a.date);
+            d.setHours(0, 0, 0, 0);
+            return d.getTime() === today.getTime();
+        });
+
+        if (!hasTodayRecord) {
+            const Leave = require('../models/Leave');
+            const Settings = require('../models/Settings');
+
+            // Re-use logic from getAllAttendance for consistency
+            const startOfToday = new Date(today);
+            const endOfToday = new Date(today);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            const leave = await Leave.findOne({
+                user: req.params.userId,
+                status: 'approved',
+                $or: [
+                    { startDate: { $lte: endOfToday }, endDate: { $gte: startOfToday } },
+                    { startDate: { $gte: startOfToday, $lte: endOfToday } }
+                ]
+            });
+
+            let status = 'absent';
+            let leaveType = null;
+
+            if (leave) {
+                status = 'leave';
+                leaveType = leave.leaveType;
+            } else {
+                const settings = await Settings.findOne() || {};
+                const weekendPolicy = settings.weekendPolicy || ['Sat', 'Sun'];
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const dayName = dayNames[today.getDay()];
+                if (weekendPolicy.includes(dayName)) {
+                    status = 'weekend';
+                }
+            }
+
+            // Push a virtual record for today
+            attendanceList.push({
+                user: req.params.userId,
+                date: today,
+                status,
+                leaveType,
+                isMissingRecord: true
+            });
+        }
+    }
 
     res.json(attendanceList);
 };
@@ -195,10 +293,8 @@ const getAllAttendance = async (req, res) => {
 
     // Date Filter
     if (startDate && endDate) {
-        // Adjust endDate to include the full day
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-
         query.date = {
             $gte: new Date(startDate),
             $lte: end
@@ -212,10 +308,110 @@ const getAllAttendance = async (req, res) => {
         query.status = status.toLowerCase();
     }
 
-    // Populate user details (name, email)
+    // Fetch existing logs
     const logs = await Attendance.find(query)
-        .populate('user', 'name email designation')
+        .populate('user', 'name email designation status')
         .sort({ date: -1 });
+
+    // If it's a single day view (e.g., today), include all active employees
+    if (startDate && (startDate === endDate || !endDate)) {
+        const User = require('../models/User');
+        const Leave = require('../models/Leave');
+
+        // Normalize todayDate for robust comparison
+        const todayDate = new Date(startDate);
+        todayDate.setHours(0, 0, 0, 0);
+
+        // Fetch all employees joined on or before todayDate
+        const activeUsers = await User.find({
+            role: 'employee',
+            status: 'active'
+        }).select('name email designation joiningDate');
+
+        // Filter out those who haven't joined yet
+        const eligibleUsers = activeUsers.filter(u => {
+            if (!u.joiningDate) return true; // Default to eligible if no joining date
+            const jDate = new Date(u.joiningDate);
+            jDate.setHours(0, 0, 0, 0);
+            return jDate <= todayDate;
+        });
+
+        const loggedUserIds = logs.map(l => l.user ? l.user._id.toString() : null);
+
+        const missingUsers = eligibleUsers.filter(u => !loggedUserIds.includes(u._id.toString()));
+
+        const Settings = require('../models/Settings');
+        const Holiday = require('../models/Holiday');
+
+        const holiday = await Holiday.findOne({
+            date: {
+                $gte: todayDate,
+                $lt: new Date(todayDate.getTime() + 24 * 60 * 60 * 1000)
+            }
+        });
+
+        const missingLogs = await Promise.all(missingUsers.map(async (u) => {
+            // Priority 1: Holiday
+            if (holiday) {
+                return {
+                    user: u,
+                    date: todayDate,
+                    status: 'holiday',
+                    leaveType: holiday.name,
+                    isMissingRecord: true
+                };
+            }
+            // Check if user is on approved leave today
+            // Use a slightly wider window to account for any timezone/time offset issues
+            const startOfToday = new Date(todayDate);
+            const endOfToday = new Date(todayDate);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            const leave = await Leave.findOne({
+                user: u._id,
+                status: 'approved',
+                $or: [
+                    { startDate: { $lte: endOfToday }, endDate: { $gte: startOfToday } },
+                    { startDate: { $gte: startOfToday, $lte: endOfToday } }
+                ]
+            });
+
+            if (leave) {
+                return {
+                    user: u,
+                    date: todayDate,
+                    status: 'leave', // Proactively marked as leave
+                    leaveType: leave.leaveType,
+                    leaveDuration: leave.leaveDuration || 1,
+                    isMissingRecord: true
+                };
+            }
+
+            // Check if it's a weekend based on policy
+            const settings = await Settings.findOne() || {};
+            const weekendPolicy = settings.weekendPolicy || ['Sat', 'Sun'];
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = dayNames[todayDate.getDay()];
+
+            if (weekendPolicy.includes(dayName)) {
+                return {
+                    user: u,
+                    date: todayDate,
+                    status: 'weekend',
+                    isMissingRecord: true
+                };
+            }
+
+            return {
+                user: u,
+                date: todayDate,
+                status: 'absent',
+                isMissingRecord: true
+            };
+        }));
+
+        return res.json([...logs, ...missingLogs]);
+    }
 
     res.json(logs);
 };

@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, ReferenceLine
 } from 'recharts';
+import { Icons } from '../constants';
 import { attendanceService } from '../src/api/attendanceService';
 import { leaveService, LeaveRequest } from '../src/api/leaveService';
 import { holidayService } from '../src/api/holidayService';
@@ -115,90 +116,94 @@ const Dashboard: React.FC = () => {
     : 0;
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="space-y-5">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Employees', value: stats.totalEmployees, change: '+0', color: 'bg-blue-600', trend: 'stable' },
-          { label: 'Present Today', value: stats.present, change: `${activePercentage}%`, color: 'bg-emerald-500', trend: 'up' },
-          { label: 'Absent Today', value: stats.absent, change: '-', color: 'bg-rose-500', trend: 'down' },
-          { label: 'On Leave Today', value: stats.onLeave, change: '-', color: 'bg-amber-500', trend: 'stable' }
+          { label: 'Total Workforce', value: stats.totalEmployees, sub: 'Active Employees', color: 'from-blue-600 to-indigo-700', icon: <Icons.Search className="w-4 h-4" /> },
+          { label: 'Present Today', value: stats.present, sub: `${activePercentage}% Attendance`, color: 'from-emerald-500 to-teal-600', icon: <Icons.Search className="w-4 h-4" /> },
+          { label: 'Absent Today', value: stats.absent, sub: 'Needs Review', color: 'from-rose-500 to-pink-600', icon: <Icons.Search className="w-4 h-4" /> },
+          { label: 'On Leave Today', value: stats.onLeave, sub: 'Planned Absence', color: 'from-amber-500 to-orange-600', icon: <Icons.Search className="w-4 h-4" /> }
         ].map((stat) => (
           <div
             key={stat.label}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all group"
+            className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group overflow-hidden relative"
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-medium text-gray-500 mb-1 group-hover:text-blue-600 transition-colors">{stat.label}</p>
-                <h3 className="text-3xl font-bold text-gray-900">{stat.value}</h3>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br opacity-[0.03] dark:opacity-[0.07] rounded-bl-full transform translate-x-4 -translate-y-4 group-hover:scale-150 transition-transform duration-500 from-blue-500 to-indigo-600"></div>
+            <div className="flex justify-between items-start relative z-10">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{stat.label}</p>
+                <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</h3>
+                <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{stat.sub}</p>
               </div>
-              <span className={`p-3 rounded-xl ${stat.color} text-white shadow-lg group-hover:rotate-6 transition-transform`}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </span>
+              <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.color} text-white shadow-lg shadow-blue-500/10`}>
+                {stat.icon}
+              </div>
             </div>
-            {/* Trend indicator omitted or static since we don't have historical comparison yet */}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Main Chart */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Attendance Analysis</h3>
-              <p className="text-xs text-gray-400 font-medium">Comparison of {metric === 'actual' ? 'Actual vs Target' : 'Overtime Hours'}</p>
+              <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Workforce Analytics</h3>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-0.5">Performance tracking & trends</p>
             </div>
-            <div className="flex items-center bg-gray-50 p-1 rounded-xl border border-gray-100">
+            <div className="flex bg-slate-50 dark:bg-slate-950/40 p-1 rounded-lg border border-slate-100 dark:border-slate-800/50">
               <button
                 onClick={() => setMetric('actual')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${metric === 'actual' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${metric === 'actual' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'}`}
               >
                 Attendance
               </button>
               <button
                 onClick={() => setMetric('overtime')}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${metric === 'overtime' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${metric === 'overtime' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'}`}
               >
                 Overtime
               </button>
             </div>
           </div>
 
-          <div className="h-[320px]">
+          <div className="h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={attendanceChartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <BarChart data={attendanceChartData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/50" />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 700 }}
+                  tick={{ fill: '#64748b', fontSize: 9, fontWeight: 900, textTransform: 'uppercase' }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 700 }}
-                  dx={-10}
+                  tick={{ fill: '#64748b', fontSize: 9, fontWeight: 900 }}
+                  dx={-5}
                 />
                 <Tooltip
-                  cursor={{ fill: '#f8fafc' }}
+                  cursor={{ fill: 'currentColor', className: 'text-slate-50/50 dark:text-slate-800/20' }}
                   contentStyle={{
-                    borderRadius: '16px',
-                    border: 'none',
-                    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
-                    padding: '12px'
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                    padding: '8px'
                   }}
-                  itemStyle={{ fontSize: '12px', fontWeight: 700 }}
-                  labelStyle={{ fontSize: '10px', color: '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', fontWeight: 900 }}
+                  itemStyle={{ fontSize: '10px', fontWeight: 900, color: '#1e293b', textTransform: 'uppercase' }}
+                  labelStyle={{ fontSize: '9px', color: '#64748b', marginBottom: '4px', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.05em' }}
                 />
                 <Legend
                   verticalAlign="top"
                   align="right"
-                  iconType="rect"
-                  wrapperStyle={{ paddingBottom: '20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}
+                  iconType="circle"
+                  iconSize={6}
+                  wrapperStyle={{ paddingBottom: '20px', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}
                 />
 
                 {metric === 'actual' ? (
@@ -206,19 +211,19 @@ const Dashboard: React.FC = () => {
                     <Bar
                       dataKey="actual"
                       fill="#3b82f6"
-                      radius={[6, 6, 0, 0]}
-                      barSize={32}
-                      name="Actual Attendance %"
+                      radius={[4, 4, 0, 0]}
+                      barSize={24}
+                      name="Attendance Rate (%)"
                     />
-                    <ReferenceLine y={95} stroke="#10b981" strokeDasharray="3 3" label={{ position: 'right', value: 'Target', fill: '#10b981', fontSize: 10, fontWeight: 800 }} />
+                    <ReferenceLine y={95} stroke="#10b981" strokeDasharray="3 3" />
                   </>
                 ) : (
                   <Bar
                     dataKey="overtime"
                     fill="#8b5cf6"
-                    radius={[6, 6, 0, 0]}
-                    barSize={32}
-                    name="Overtime Hours"
+                    radius={[4, 4, 0, 0]}
+                    barSize={24}
+                    name="OT Hours"
                   />
                 )}
               </BarChart>
@@ -226,100 +231,126 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold mb-6 text-gray-900">Real-time Status</h3>
-          <div className="h-[320px] relative">
+        {/* Status Pie */}
+        <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 flex flex-col">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-6">Staff Distribution</h3>
+          <div className="h-[220px] relative flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={70}
-                  outerRadius={95}
+                  innerRadius={55}
+                  outerRadius={75}
                   paddingAngle={8}
                   dataKey="value"
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} className="hover:opacity-80 transition-opacity cursor-pointer" />
+                    <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} className="hover:opacity-80 transition-opacity cursor-pointer focus:outline-none" />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend verticalAlign="bottom" align="center" iconType="circle" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '10px',
+                    fontWeight: 900,
+                    textTransform: 'uppercase'
+                  }}
+                />
+                <Legend verticalAlign="bottom" align="center" iconType="circle" iconSize={6} wrapperStyle={{ color: '#64748b', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', paddingTop: '20px' }} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-              <p className="text-2xl font-black text-gray-900">{activePercentage}%</p>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Active</p>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none mt-[-10px]">
+              <p className="text-2xl font-black text-slate-800 dark:text-white tracking-tighter">{activePercentage}%</p>
+              <p className="text-[8px] text-slate-400 font-black uppercase tracking-widest">Active</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">Pending Leave Requests</h3>
-            <button className="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors">View All</button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Pending Requests */}
+        <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50">
+          <div className="flex justify-between items-center mb-5">
+            <div>
+              <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Urgent Approvals</h3>
+              <p className="text-[9px] text-rose-500 font-bold uppercase tracking-widest mt-0.5">Requires Action</p>
+            </div>
+            <button className="text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-3 py-1.5 rounded-lg transition-all border border-blue-100 dark:border-blue-500/20 shadow-sm">Review Queue</button>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-2">
             {leaves.length > 0 ? leaves.map((leave) => (
-              <div key={leave.id} className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-all group cursor-pointer border border-transparent hover:border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform">
-                    {(leave.employeeName || 'U')[0]}
+              <div key={leave.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all group cursor-pointer">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-white dark:bg-slate-900 rounded-lg flex items-center justify-center font-black text-[10px] text-blue-600 dark:text-blue-400 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-800 overflow-hidden uppercase">
+                    {(leave.employeeName || '?')[0]}
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900">{leave.employeeName}</p>
-                    <p className="text-xs text-gray-500">{leave.type}</p>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-black text-slate-800 dark:text-slate-200 truncate uppercase tracking-tight">{leave.employeeName}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black tracking-widest uppercase">{leave.type}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${leave.status === 'approved' ? 'text-emerald-500 bg-emerald-50' :
-                      leave.status === 'rejected' ? 'text-rose-500 bg-rose-50' :
-                        'text-amber-500 bg-amber-50'
-                    }`}>
-                    {leave.status?.charAt(0).toUpperCase() + leave.status?.slice(1)}
+                <div className="flex items-center gap-2">
+                  <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${leave.status === 'pending' ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-100 dark:border-amber-500/20' : 'text-slate-400 bg-slate-100'}`}>
+                    {leave.status}
                   </span>
+                  <div className="w-6 h-6 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Icons.Search className="w-3 h-3 text-blue-600" />
+                  </div>
                 </div>
               </div>
             )) : (
-              <p className="text-sm text-gray-400 text-center py-4">No pending requests</p>
+              <div className="py-10 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl">
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Inbox is clear</p>
+              </div>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold mb-6">Upcoming Holidays</h3>
-            <div className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Holidays */}
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-5">Upcoming Break</h3>
+            <div className="space-y-3">
               {holidays.length > 0 ? holidays.map((holiday) => (
-                <div key={holiday.id} className="flex items-center space-x-4 group cursor-pointer">
-                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 flex flex-col items-center justify-center rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                    <span className="text-[10px] font-black uppercase">{new Date(holiday.date).toLocaleString('default', { month: 'short' })}</span>
-                    <span className="text-lg font-black leading-none">{holiday.date.split('-')[2]}</span>
+                <div key={holiday.id} className="flex items-center space-x-3 group cursor-pointer p-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-all">
+                  <div className="w-9 h-9 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex flex-col items-center justify-center rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all border border-indigo-100 dark:border-indigo-500/20 shadow-sm shrink-0">
+                    <span className="text-[7px] font-black uppercase tracking-tighter opacity-70">{new Date(holiday.date).toLocaleString('default', { month: 'short' })}</span>
+                    <span className="text-sm font-black leading-none">{holiday.date.split('-')[2]}</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{holiday.name}</p>
-                    <p className="text-xs text-gray-400">{holiday.type}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight">{holiday.name}</p>
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">{holiday.type}</p>
                   </div>
                 </div>
               )) : (
-                <p className="text-sm text-gray-400">No upcoming holidays</p>
+                <div className="py-6 text-center">
+                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">No holidays soon</p>
+                </div>
               )}
             </div>
           </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold mb-6">Meetings</h3>
-            <div className="space-y-4">
+
+          {/* Meetings */}
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50">
+            <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-5">Team Sync</h3>
+            <div className="space-y-3">
               {meetings.length > 0 ? meetings.map((meeting) => (
-                <div key={meeting.id} className="relative pl-6 border-l-2 border-blue-500 group cursor-pointer hover:bg-blue-50/50 p-2 rounded-r-xl transition-colors">
-                  <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-500 group-hover:scale-150 transition-transform"></div>
-                  <p className="text-sm font-bold text-gray-900 truncate">{meeting.title}</p>
-                  <p className="text-xs text-gray-500">{meeting.time} • {meeting.attendees?.length || 0} Team</p>
+                <div key={meeting.id} className="relative pl-4 border-l-2 border-blue-500 group cursor-pointer hover:bg-slate-50 dark:hover:bg-blue-500/10 py-2 px-2 rounded-r-xl transition-all">
+                  <p className="text-[11px] font-black text-slate-800 dark:text-white truncate uppercase tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{meeting.title}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-1 h-1 rounded-full bg-blue-500"></span>
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">{meeting.time} • {meeting.attendees?.length || 0} Members</p>
+                  </div>
                 </div>
               )) : (
-                <p className="text-sm text-gray-400">No scheduled meetings</p>
+                <div className="py-6 text-center">
+                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Schedule is open</p>
+                </div>
               )}
             </div>
           </div>

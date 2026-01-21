@@ -20,6 +20,10 @@ export interface CompanySettings {
         notifyStaff: boolean;
         enableHalfDay: boolean;
     };
+    payroll: {
+        monthlyBudget: number;
+        salaryDate: number;
+    };
 }
 
 export const settingService = {

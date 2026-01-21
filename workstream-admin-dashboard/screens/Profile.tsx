@@ -96,133 +96,133 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-scale">
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="relative h-32 bg-gradient-to-r from-blue-600 to-indigo-700">
-          <div className="absolute -bottom-12 left-8">
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="relative h-28 bg-gradient-to-r from-blue-600 to-indigo-700">
+          <div className="absolute -bottom-10 left-8">
             <div className="relative group">
               {profile.image ? (
                 <img
                   src={profile.image}
                   alt="Profile"
-                  className="w-24 h-24 rounded-2xl border-4 border-white shadow-xl object-cover"
+                  className="w-20 h-20 rounded-xl border-4 border-white dark:border-slate-900 shadow-xl object-cover group-hover:scale-105 transition-transform"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-2xl border-4 border-white shadow-xl bg-gray-200 flex items-center justify-center text-gray-400">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <div className="w-20 h-20 rounded-xl border-4 border-white dark:border-slate-900 shadow-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform">
+                  <Icons.Search className="w-7 h-7" />
                 </div>
               )}
-              <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer">
+              <label className="absolute inset-0 flex items-center justify-center bg-slate-950/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity text-white cursor-pointer backdrop-blur-[2px]">
                 <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <Icons.Plus className="w-5 h-5" />
               </label>
             </div>
           </div>
         </div>
 
-        <div className="pt-16 pb-8 px-8">
-          <h2 className="text-2xl font-black text-gray-900">{profile.name}</h2>
-          <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">{profile.role}</p>
+        <div className="pt-14 pb-6 px-8 flex justify-between items-end">
+          <div>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{profile.name}</h2>
+            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-0.5">{profile.role}</p>
+          </div>
+          <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-tighter">Account Status: Active</p>
         </div>
 
-        <form onSubmit={handleSave} className="p-8 border-t border-gray-50 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+        <form onSubmit={handleSave} className="p-8 border-t border-slate-50 dark:border-slate-800/50 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Personnel Name</label>
               <input
                 type="text"
                 value={profile.name}
                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="w-full border border-gray-100 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold"
+                className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-4 py-2.5 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all font-bold text-[11px] text-slate-800 dark:text-slate-100 uppercase tracking-tight"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Communication Endpoint</label>
               <input
                 type="email"
                 value={profile.email}
                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                className="w-full border border-gray-100 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold"
+                className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-4 py-2.5 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all font-bold text-[11px] text-slate-800 dark:text-slate-100 tracking-tight"
               />
             </div>
           </div>
 
-          <div className="space-y-6">
-            <h3 className="text-lg font-black text-gray-900 flex items-center">
-              <span className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mr-3">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-              </span>
-              Update Security Password
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+          <div className="space-y-5 pt-2">
+            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-2">Security Infrastructure</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Existing Key</label>
                 <input
                   type="password"
                   value={profile.currentPassword}
                   onChange={(e) => setProfile({ ...profile, currentPassword: e.target.value })}
-                  className="w-full border border-gray-100 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-4 py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[11px] font-bold dark:text-slate-100"
                   placeholder="••••••••"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">New Key Assignment</label>
                 <input
                   type="password"
                   value={profile.newPassword}
                   onChange={(e) => setProfile({ ...profile, newPassword: e.target.value })}
-                  className="w-full border border-gray-100 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
-                  placeholder="Minimum 8 chars"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-4 py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[11px] font-bold dark:text-slate-100"
+                  placeholder="MIN 8 CHARS"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Confirm Password</label>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Key Validation</label>
                 <input
                   type="password"
                   value={profile.confirmPassword}
                   onChange={(e) => setProfile({ ...profile, confirmPassword: e.target.value })}
-                  className="w-full border border-gray-100 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-4 py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[11px] font-bold dark:text-slate-100"
                   placeholder="••••••••"
                 />
               </div>
             </div>
           </div>
 
-          <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
-            <div className="text-xs text-gray-400 font-medium">
-              Last profile update: 2 days ago
+          <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+            <div className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
+              Last integrity check: verified
             </div>
             <button
               type="submit"
               disabled={isLoading}
-              className={`px-8 py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`px-8 py-2.5 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/10 hover:bg-blue-700 transition-all active:scale-95 flex items-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Processing...
+                  Processing Sync...
                 </>
               ) : (
-                'Save Profile Changes'
+                'Synchronize Profile'
               )}
             </button>
           </div>
         </form>
       </div>
 
-      <div className="bg-rose-50 rounded-3xl p-8 border border-rose-100 flex items-center justify-between">
-        <div>
-          <h4 className="text-rose-900 font-black text-lg">Two-Factor Authentication</h4>
-          <p className="text-rose-700 text-sm font-medium">Add an extra layer of security to your admin account.</p>
+      <div className="bg-blue-50/50 dark:bg-blue-500/5 rounded-2xl p-6 border border-blue-100/50 dark:border-blue-500/10 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center text-blue-600 shadow-sm border border-blue-100 dark:border-blue-500/20">
+            <Icons.Search className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-slate-900 dark:text-white font-black text-xs uppercase tracking-tight">Advanced Core Security</h4>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-tight mt-0.5">Multi-factor operational validation</p>
+          </div>
         </div>
-        <button className="px-6 py-3 bg-white text-rose-600 rounded-xl font-bold border border-rose-200 hover:bg-rose-100 transition-colors active:scale-95 shadow-sm">
-          Enable 2FA
+        <button className="px-5 py-2 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 rounded-lg text-[9px] font-black uppercase tracking-widest border border-blue-100 dark:border-blue-500/20 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all active:scale-95 shadow-sm">
+          Initialize MFA
         </button>
       </div>
     </div>

@@ -30,6 +30,16 @@ const updateHoliday = async (req, res) => {
     const holiday = await Holiday.findById(req.params.id);
 
     if (holiday) {
+        // Prevent editing past holidays
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const hDate = new Date(holiday.date);
+        hDate.setHours(0, 0, 0, 0);
+
+        if (hDate < today) {
+            return res.status(400).json({ message: 'Cannot edit past holidays.' });
+        }
+
         holiday.name = req.body.name || holiday.name;
         holiday.date = req.body.date || holiday.date;
         holiday.type = req.body.type || holiday.type;
@@ -48,6 +58,16 @@ const deleteHoliday = async (req, res) => {
     const holiday = await Holiday.findById(req.params.id);
 
     if (holiday) {
+        // Prevent deleting past holidays
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const hDate = new Date(holiday.date);
+        hDate.setHours(0, 0, 0, 0);
+
+        if (hDate < today) {
+            return res.status(400).json({ message: 'Cannot delete past holidays.' });
+        }
+
         await Holiday.deleteOne({ _id: holiday._id });
         res.json({ message: 'Holiday removed' });
     } else {

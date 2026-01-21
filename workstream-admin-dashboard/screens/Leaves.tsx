@@ -92,49 +92,46 @@ const Leaves: React.FC = () => {
     }
   };
 
-  const inputClasses = "w-full border border-gray-200 bg-gray-50 rounded-xl p-3 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-gray-300";
-  const labelClasses = "text-xs font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block";
+  const inputClasses = "w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400";
+  const labelClasses = "text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5 mb-1 block";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">Leave Requests</h2>
-          <p className="text-sm text-gray-500 font-medium">Manage and respond to employee leave applications</p>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight uppercase">Leave Board</h2>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-tight">Review and manage staff absence requests</p>
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setShowPolicyModal(true)}
-            className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all active:scale-95 flex items-center"
-          >
-            <Icons.Settings />
-            <span className="ml-2">Policy Settings</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setShowPolicyModal(true)}
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:border-blue-500 hover:text-blue-600 transition-all active:scale-95 flex items-center shadow-sm"
+        >
+          <Icons.Settings className="w-3.5 h-3.5" />
+          <span className="ml-1.5">Policy Configuration</span>
+        </button>
       </div>
 
-      {/* Internal Filtering Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm">
-        <div className="relative flex-1 w-full">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-            <Icons.Search />
+      <div className="flex flex-col md:flex-row gap-3 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-3 rounded-xl border border-slate-100 dark:border-slate-800/50 shadow-sm">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <Icons.Search className="w-4 h-4" />
           </div>
           <input
             type="text"
-            placeholder="Search request or staff..."
+            placeholder="Search employees or reasons..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className="w-full pl-9 pr-3 py-2 bg-slate-50/50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 rounded-lg text-[11px] font-bold focus:ring-2 focus:ring-blue-500/50 outline-none transition-all dark:text-slate-200"
           />
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+        <div className="flex gap-1 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
           {['All', 'Pending', 'Approved', 'Rejected'].map(status => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`flex-1 sm:flex-none px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${statusFilter === status
-                ? 'bg-blue-50 text-blue-600 border border-blue-200'
-                : 'bg-white text-gray-400 border border-gray-100 hover:bg-gray-50'
+              className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${statusFilter === status
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/10'
+                : 'bg-white dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
             >
               {status}
@@ -143,76 +140,83 @@ const Leaves: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto min-h-[400px]">
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-gray-50/50 border-b border-gray-100">
-              <tr className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                <th className="px-8 py-6">Employee</th>
-                <th className="px-8 py-6">Leave Type</th>
-                <th className="px-8 py-6">Dates</th>
-                <th className="px-8 py-6">Reason</th>
-                <th className="px-8 py-6">Status</th>
-                <th className="px-8 py-6 text-right">Actions</th>
+            <thead className="bg-slate-50/50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800/50">
+              <tr className="text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest">
+                <th className="px-4 py-3">Employee</th>
+                <th className="px-4 py-3">Mode</th>
+                <th className="px-4 py-3">Timeline</th>
+                <th className="px-4 py-3">Duration</th>
+                <th className="px-4 py-3">Reasoning</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {filteredLeaves.length > 0 ? filteredLeaves.map((leave) => (
-                <tr key={leave._id} className="hover:bg-blue-50/20 transition-all group">
-                  <td className="px-8 py-5 whitespace-nowrap">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center font-black text-xs shadow-sm">
-                        {(leave.user?.name || 'U').split(' ').map((n: string) => n[0]).join('')}
+                <tr key={leave._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-7 h-7 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-100 dark:border-blue-500/20 flex items-center justify-center text-[10px] font-black text-blue-600 dark:text-blue-400">
+                        {(leave.user?.name || '?')[0]}
                       </div>
-                      <span className="text-sm font-black text-gray-900 group-hover:text-blue-600 transition-colors">{leave.user?.name || 'Unknown'}</span>
+                      <span className="text-[11px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">{leave.user?.name || 'Anonymous Staff'}</span>
                     </div>
                   </td>
-                  <td className="px-8 py-5 whitespace-nowrap">
-                    <span className="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-lg border border-gray-200/50">{leave.leaveType}</span>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-500/20 uppercase tracking-widest">{leave.leaveType}</span>
                   </td>
-                  <td className="px-8 py-5 whitespace-nowrap text-sm text-gray-500 font-medium">
-                    {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                  <td className="px-4 py-3 whitespace-nowrap text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-tighter">
+                    {new Date(leave.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} - {new Date(leave.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </td>
-                  <td className="px-8 py-5 text-sm text-gray-400 font-medium max-w-xs truncate italic">"{leave.reason}"</td>
-                  <td className="px-8 py-5 whitespace-nowrap">
-                    <span className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl                      leave.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
-                      leave.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-rose-50 text-rose-700 border-rose-100'
-                    }`}>
+                  <td className="px-4 py-3 whitespace-nowrap text-[10px] font-black text-slate-600 dark:text-slate-400">
+                    {leave.leaveDuration === 0.5 ? '0.5 Day' :
+                      leave.leaveDuration > 1 ? `${leave.leaveDuration} Days` : '1 Day'}
+                  </td>
+                  <td className="px-4 py-3 max-w-[200px] truncate">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold italic truncate">"{leave.reason}"</p>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md ${leave.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20' :
+                      leave.status === 'pending' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20'
+                      }`}>
                       {leave.status}
                     </span>
                   </td>
-                  <td className="px-8 py-5 whitespace-nowrap text-right space-x-3">
+                  <td className="px-4 py-3 whitespace-nowrap text-right">
                     {leave.status === 'pending' ? (
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end gap-1.5">
                         <button
                           onClick={() => handleApprove(leave._id)}
-                          className="px-4 py-2 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-100 transition-all active:scale-90"
+                          className="px-2 py-1 bg-emerald-600 text-white text-[8px] font-black uppercase tracking-widest rounded-md hover:bg-emerald-700 shadow-lg shadow-emerald-500/10 transition-all active:scale-95"
                         >
                           Approve
                         </button>
                         <button
                           onClick={() => handleReject(leave._id)}
-                          className="px-4 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-600 shadow-lg shadow-rose-100 transition-all active:scale-90"
+                          className="px-2 py-1 bg-rose-600 text-white text-[8px] font-black uppercase tracking-widest rounded-md hover:bg-rose-700 shadow-lg shadow-rose-500/10 transition-all active:scale-95"
                         >
                           Reject
                         </button>
                       </div>
                     ) : (
-                      <button className="p-2.5 text-gray-300 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 rounded-xl transition-all">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                      <button className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all">
+                        <Icons.Search className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </td>
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={6} className="px-8 py-20 text-center">
+                  <td colSpan={6} className="px-8 py-16 text-center border-dashed border-2 border-slate-50 dark:border-slate-800/50 m-4 rounded-xl">
                     <div className="flex flex-col items-center">
-                      <div className="w-16 h-16 bg-blue-50 text-blue-200 rounded-full flex items-center justify-center mb-4">
-                        <Icons.Leaves />
+                      <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                        <Icons.Leaves className="w-6 h-6" />
                       </div>
-                      <p className="text-gray-900 font-black">No leave requests found</p>
-                      <p className="text-gray-400 text-xs font-medium">Try adjusting your filters or search terms</p>
+                      <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">No requests found</h3>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-tight mt-1">Clear filters to see more listings</p>
                     </div>
                   </td>
                 </tr>
@@ -224,28 +228,28 @@ const Leaves: React.FC = () => {
 
       {/* Policy Settings Modal */}
       {showPolicyModal && (
-        <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-md flex items-center justify-center z-[110] p-4">
-          <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-xl overflow-hidden animate-fade-scale">
-            <div className="px-10 py-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 scale-90 md:scale-100">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
               <div>
-                <h3 className="text-2xl font-black text-gray-900">Leave Policy</h3>
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Configure global entitlement rules</p>
+                <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight uppercase">Leave Policy</h3>
+                <p className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">Global parameters</p>
               </div>
-              <button onClick={() => setShowPolicyModal(false)} className="p-3 bg-white text-gray-400 hover:text-gray-900 rounded-2xl shadow-sm transition-all active:rotate-90">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <button onClick={() => setShowPolicyModal(false)} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
 
-            <form className="p-10 space-y-8" onSubmit={handleUpdatePolicy}>
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-1 bg-blue-600 rounded-full"></div>
-                  <h4 className="font-black text-gray-900 uppercase tracking-[0.2em] text-[10px]">Annual Entitlements</h4>
+            <form className="p-6 space-y-4 overflow-y-auto max-h-[70vh] custom-scrollbar" onSubmit={handleUpdatePolicy}>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-0.5 bg-blue-600 rounded-full"></div>
+                  <h4 className="font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px]">Allowance Configuration</h4>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelClasses}>Casual Leave (Days/Year)</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className={labelClasses}>Casual (Days)</label>
                     <input
                       type="number"
                       value={policy.casualLeave}
@@ -253,8 +257,8 @@ const Leaves: React.FC = () => {
                       className={inputClasses}
                     />
                   </div>
-                  <div>
-                    <label className={labelClasses}>Sick Leave (Days/Year)</label>
+                  <div className="space-y-1.5">
+                    <label className={labelClasses}>Sick (Days)</label>
                     <input
                       type="number"
                       value={policy.sickLeave}
@@ -262,11 +266,8 @@ const Leaves: React.FC = () => {
                       className={inputClasses}
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className={labelClasses}>Annual Leave (Days/Year)</label>
+                  <div className="space-y-1.5">
+                    <label className={labelClasses}>Annual (Days)</label>
                     <input
                       type="number"
                       value={policy.annualLeave}
@@ -274,8 +275,8 @@ const Leaves: React.FC = () => {
                       className={inputClasses}
                     />
                   </div>
-                  <div>
-                    <label className={labelClasses}>Maternity Leave (Weeks)</label>
+                  <div className="space-y-1.5">
+                    <label className={labelClasses}>Maternity (Weeks)</label>
                     <input
                       type="number"
                       value={policy.maternityLeave}
@@ -286,51 +287,42 @@ const Leaves: React.FC = () => {
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-1 bg-blue-600 rounded-full"></div>
-                  <h4 className="font-black text-gray-900 uppercase tracking-[0.2em] text-[10px]">Approval Workflow</h4>
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-0.5 bg-blue-600 rounded-full"></div>
+                  <h4 className="font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px]">Operational Flow</h4>
                 </div>
 
-                <div className="p-6 bg-blue-50/30 rounded-3xl border border-blue-100/50 space-y-4">
-                  <label className="flex items-center justify-between cursor-pointer group">
-                    <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors">Require Manager Approval First</span>
-                    <input
-                      type="checkbox"
-                      checked={policy.requireApproval}
-                      onChange={(e) => setPolicy({ ...policy, requireApproval: e.target.checked })}
-                      className="w-10 h-6 bg-gray-200 checked:bg-blue-600 rounded-full appearance-none relative cursor-pointer transition-all before:content-[''] before:absolute before:top-1 before:left-1 before:w-4 before:h-4 before:bg-white before:rounded-full before:transition-all checked:before:translate-x-4 shadow-inner"
-                    />
-                  </label>
-                  <label className="flex items-center justify-between cursor-pointer group">
-                    <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors">Notify Staff via Email Automatically</span>
-                    <input
-                      type="checkbox"
-                      checked={policy.notifyStaff}
-                      onChange={(e) => setPolicy({ ...policy, notifyStaff: e.target.checked })}
-                      className="w-10 h-6 bg-gray-200 checked:bg-blue-600 rounded-full appearance-none relative cursor-pointer transition-all before:content-[''] before:absolute before:top-1 before:left-1 before:w-4 before:h-4 before:bg-white before:rounded-full before:transition-all checked:before:translate-x-4 shadow-inner"
-                    />
-                  </label>
-                  <label className="flex items-center justify-between cursor-pointer group">
-                    <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors">Enable Half-Day Requests</span>
-                    <input
-                      type="checkbox"
-                      checked={policy.enableHalfDay}
-                      onChange={(e) => setPolicy({ ...policy, enableHalfDay: e.target.checked })}
-                      className="w-10 h-6 bg-gray-200 checked:bg-blue-600 rounded-full appearance-none relative cursor-pointer transition-all before:content-[''] before:absolute before:top-1 before:left-1 before:w-4 before:h-4 before:bg-white before:rounded-full before:transition-all checked:before:translate-x-4 shadow-inner"
-                    />
-                  </label>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Require Manager Approval', key: 'requireApproval' },
+                    { label: 'Automated Email Alerts', key: 'notifyStaff' },
+                    { label: 'Half-Day System', key: 'enableHalfDay' }
+                  ].map((item) => (
+                    <label key={item.key} className="flex items-center justify-between cursor-pointer p-2.5 bg-slate-50 dark:bg-slate-950/30 rounded-lg border border-slate-100 dark:border-slate-800/50 hover:border-blue-500/30 transition-all">
+                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-tight">{item.label}</span>
+                      <div className="relative inline-flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={(policy as any)[item.key]}
+                          onChange={(e) => setPolicy({ ...policy, [item.key]: e.target.checked })}
+                          className="sr-only peer"
+                        />
+                        <div className="w-7 h-4 bg-slate-200 dark:bg-slate-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex space-x-4 pt-4">
-                <button type="button" onClick={() => setShowPolicyModal(false)} className="flex-1 px-6 py-4 border border-gray-100 text-gray-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors">Discard</button>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowPolicyModal(false)} className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-500 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Discard</button>
                 <button
                   type="submit"
                   disabled={isSavingPolicy}
-                  className="flex-[2] px-6 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95"
+                  className="flex-[1.5] px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {isSavingPolicy ? 'Saving...' : 'Update Global Policies'}
+                  {isSavingPolicy ? 'Syncing...' : 'Update Policy'}
                 </button>
               </div>
             </form>

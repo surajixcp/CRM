@@ -22,12 +22,19 @@ const attendanceSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['present', 'absent', 'leave'],
+        enum: ['present', 'absent', 'leave', 'unpaid_leave', 'weekend', 'holiday'],
         default: 'absent'
+    },
+    leaveType: {
+        type: String
     },
     overtimeHours: {
         type: Number,
         default: 0
+    },
+    leaveDuration: {
+        type: Number,
+        default: 0 // 1 for full day, 0.5 for half day
     }
 }, {
     timestamps: true

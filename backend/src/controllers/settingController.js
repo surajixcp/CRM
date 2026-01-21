@@ -24,7 +24,8 @@ const updateSettings = async (req, res) => {
         companyLogo,
         workingHours,
         weekendPolicy,
-        leavePolicy
+        leavePolicy,
+        payroll
     } = req.body;
 
     let settings = await Settings.findOne();
@@ -36,6 +37,7 @@ const updateSettings = async (req, res) => {
         if (workingHours) settings.workingHours = workingHours;
         if (weekendPolicy) settings.weekendPolicy = weekendPolicy;
         if (leavePolicy) settings.leavePolicy = leavePolicy;
+        if (payroll) settings.payroll = payroll;
 
         const updatedSettings = await settings.save();
         res.json(updatedSettings);

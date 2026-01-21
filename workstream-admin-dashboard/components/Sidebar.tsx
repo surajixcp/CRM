@@ -46,21 +46,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onNavigate, isOpen, onT
 
   return (
     <aside
-      className={`bg-white border-r border-gray-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col z-50
-        ${isOpen ? 'w-72' : 'w-24'} fixed inset-y-0 left-0 lg:static shadow-sm`}
+      className={`bg-white dark:bg-slate-900 shadow-xl dark:shadow-none border-r border-slate-200 dark:border-slate-800/50 transition-all duration-300 ease-in-out flex flex-col z-50
+        ${isOpen ? 'w-56' : 'w-16'} fixed inset-y-0 left-0 lg:static transition-colors`}
     >
-      <div className="flex items-center justify-between h-20 px-6 border-b border-gray-50">
-        <div className={`flex items-center space-x-3 overflow-hidden transition-all duration-500 ${!isOpen && 'lg:scale-0 lg:hidden'}`}>
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-100 overflow-hidden">
+      <div className="flex items-center justify-between h-12 px-4 border-b border-slate-100 dark:border-slate-800/50">
+        <div className={`flex items-center space-x-2 overflow-hidden transition-all duration-300 ${!isOpen && 'lg:scale-0 lg:hidden'}`}>
+          <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-blue-900/10 overflow-hidden shrink-0">
             {companySettings.logo ? (
               <img src={companySettings.logo} alt="L" className="w-full h-full object-cover" />
             ) : companySettings.name[0]}
           </div>
-          {isOpen && <span className="text-xl font-black tracking-tighter text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 truncate">{companySettings.name}</span>}
+          {isOpen && <span className="text-sm font-black tracking-tight text-slate-800 dark:text-white truncate uppercase">{companySettings.name}</span>}
         </div>
         {!isOpen && (
           <div className="w-full flex justify-center lg:hidden">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black shadow-md overflow-hidden">
+            <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-[10px] font-black shadow-md overflow-hidden">
               {companySettings.logo ? (
                 <img src={companySettings.logo} alt="L" className="w-full h-full object-cover" />
               ) : companySettings.name[0]}
@@ -69,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onNavigate, isOpen, onT
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto scrollbar-hide">
+      <nav className="flex-1 px-2.5 py-4 space-y-0.5 overflow-y-auto custom-scrollbar">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeScreen === item.id;
@@ -77,45 +77,37 @@ const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onNavigate, isOpen, onT
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center p-4 rounded-2xl transition-all duration-300 group relative overflow-hidden
+              className={`w-full flex items-center px-3 py-2 rounded-lg transition-all duration-200 group relative
                 ${isActive
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 sidebar-item-active active:scale-[0.98]'
-                  : 'text-gray-400 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
-              <div className={`${isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-600 group-hover:scale-110'} transition-all duration-300`}>
+              <div className={`${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400'} transition-colors`}>
                 <Icon />
               </div>
               {isOpen && (
-                <span className={`ml-4 text-sm font-bold tracking-tight transition-all duration-300 ${isActive ? 'translate-x-0' : 'translate-x-0 group-hover:translate-x-1'}`}>
+                <span className={`ml-3 text-[11px] font-bold tracking-tight transition-all ${isActive ? 'translate-x-0' : 'translate-x-0'}`}>
                   {item.label}
                 </span>
               )}
               {!isOpen && (
-                <div className="absolute left-20 px-3 py-2 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 z-50 shadow-xl whitespace-nowrap">
+                <div className="absolute left-14 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-1 group-hover:translate-x-2 z-50 shadow-xl whitespace-nowrap">
                   {item.label}
                 </div>
-              )}
-              {isActive && (
-                <div className="absolute right-[-20px] top-[-20px] w-16 h-16 bg-white/10 rounded-full blur-2xl"></div>
               )}
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-50">
+      <div className="p-2.5 border-t border-slate-100 dark:border-slate-800/50">
         <button
           onClick={onLogout}
-          className="w-full flex items-center p-4 text-rose-500 hover:bg-rose-50 rounded-2xl transition-all group relative active:scale-95"
+          className="w-full flex items-center px-3 py-2 text-rose-500 dark:text-rose-400 hover:bg-rose-500/5 dark:hover:bg-rose-500/10 rounded-lg transition-all group relative"
         >
           <Icons.Logout />
-          {isOpen && <span className="ml-4 text-sm font-black uppercase tracking-widest">Logout</span>}
-          {!isOpen && (
-            <div className="absolute left-20 px-3 py-2 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all translate-x-[-10px] group-hover:translate-x-0 z-50 shadow-xl whitespace-nowrap">
-              Logout
-            </div>
-          )}
+          {isOpen && <span className="ml-3 text-[10px] font-black uppercase tracking-widest">Logout</span>}
         </button>
       </div>
     </aside>

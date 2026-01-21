@@ -30,6 +30,10 @@ const leaveSchema = new mongoose.Schema({
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    leaveDuration: {
+        type: Number,
+        default: 1 // 1 for full day, 0.5 for half day
     }
 }, {
     timestamps: true

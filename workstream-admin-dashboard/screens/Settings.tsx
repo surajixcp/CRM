@@ -123,37 +123,37 @@ const Settings: React.FC = () => {
     });
   };
 
-  const inputClasses = "w-full bg-white border border-gray-300 rounded-xl p-3 text-gray-900 font-medium placeholder:text-gray-400 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all shadow-sm mb-1";
-  const labelClasses = "text-xs font-black text-gray-500 uppercase tracking-widest ml-1 mb-2 block";
+  const inputClasses = "w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-[11px] font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400";
+  const labelClasses = "text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5 mb-1 block";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <div className="max-w-4xl mx-auto space-y-4 pb-12">
 
       {/* Personal Profile Section */}
-      <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-8 border-b border-gray-50 bg-gray-50/30">
-          <h3 className="text-2xl font-black text-gray-900">Personal Profile</h3>
-          <p className="text-sm text-gray-500 font-medium">Manage your account details and security</p>
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-950/20">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Personal Profile</h3>
+          <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">Manage account and security</p>
         </div>
 
-        <form className="p-8 space-y-8" onSubmit={handleProfileUpdate}>
+        <form className="p-6 space-y-6" onSubmit={handleProfileUpdate}>
           {/* Profile Image */}
-          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8 p-6 bg-gray-50 rounded-3xl border border-gray-100">
+          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 p-4 bg-slate-50 dark:bg-slate-950/30 rounded-xl border border-slate-100 dark:border-slate-800/50">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 overflow-hidden border-4 border-white shadow-lg">
+              <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-400 overflow-hidden border-2 border-white dark:border-slate-900 shadow-md">
                 {profile.image ? (
                   <img src={profile.image} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 )}
               </div>
               <button
                 type="button"
                 onClick={() => profileImageInputRef.current?.click()}
-                className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white shadow-lg hover:bg-blue-700 transition-all active:scale-95"
+                className="absolute -bottom-1 -right-1 p-1.5 bg-blue-600 rounded-lg text-white shadow-lg hover:bg-blue-700 transition-all active:scale-90"
                 title="Change Photo"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
               </button>
               <input
                 type="file"
@@ -164,13 +164,13 @@ const Settings: React.FC = () => {
               />
             </div>
             <div className="text-center sm:text-left">
-              <h4 className="text-lg font-black text-gray-900">{profile.name || 'Admin User'}</h4>
-              <p className="text-sm text-gray-500">Administrator</p>
+              <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">{profile.name || 'Admin User'}</h4>
+              <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">Super Admin Role</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-1.5">
               <label className={labelClasses}>Full Name</label>
               <input
                 type="text"
@@ -179,7 +179,7 @@ const Settings: React.FC = () => {
                 className={inputClasses}
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <label className={labelClasses}>Email Address</label>
               <input
                 type="email"
@@ -188,7 +188,7 @@ const Settings: React.FC = () => {
                 className={inputClasses}
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <label className={labelClasses}>Phone Number</label>
               <input
                 type="tel"
@@ -198,7 +198,7 @@ const Settings: React.FC = () => {
                 placeholder="+1 (555) 000-0000"
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <label className={labelClasses}>Location</label>
               <input
                 type="text"
@@ -208,36 +208,36 @@ const Settings: React.FC = () => {
                 placeholder="New York, USA"
               />
             </div>
-            <div className="space-y-1 col-span-full">
+            <div className="space-y-1.5 col-span-full">
               <label className={labelClasses}>New Password (Optional)</label>
               <input
                 type="password"
                 value={profile.password}
                 onChange={(e) => setProfile({ ...profile, password: e.target.value })}
                 className={inputClasses}
-                placeholder="Leave blank to keep current password"
+                placeholder="Leave blank to keep unchanged"
               />
             </div>
           </div>
-          <div className="flex justify-end pt-4">
-            <button type="submit" className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95">
+          <div className="flex justify-end pt-2">
+            <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-500/10 transition-all active:scale-95">
               Update Profile
             </button>
           </div>
         </form>
       </div>
 
-      <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-8 border-b border-gray-50 bg-gray-50/30">
-          <h3 className="text-2xl font-black text-gray-900">General Settings</h3>
-          <p className="text-sm text-gray-500 font-medium">Global system configurations and policies</p>
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-950/20">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">General Settings</h3>
+          <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">System configurations and policies</p>
         </div>
 
-        <form className="p-8 space-y-10" onSubmit={handleCompanyUpdate}>
-          {/* Logo Management Section */}
-          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8 p-6 bg-blue-50/30 rounded-3xl border border-blue-100/50">
+        <form className="p-6 space-y-8" onSubmit={handleCompanyUpdate}>
+          {/* Logo Section */}
+          <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 p-4 bg-blue-50/30 dark:bg-blue-500/5 rounded-xl border border-blue-100 dark:border-blue-500/20">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-blue-200 overflow-hidden">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-xl font-black shadow-lg overflow-hidden">
                 {logo ? (
                   <img src={logo} alt="Company Logo" className="w-full h-full object-cover" />
                 ) : (
@@ -247,52 +247,26 @@ const Settings: React.FC = () => {
               <button
                 type="button"
                 onClick={triggerFileInput}
-                className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-lg border border-gray-100 text-blue-600 hover:text-blue-700 hover:scale-110 transition-all active:scale-95"
-                title="Change Logo"
+                className="absolute -bottom-1 -right-1 p-1.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 text-blue-600 hover:text-blue-700 transition-all active:scale-90"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
               </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleLogoChange}
-                className="hidden"
-                accept="image/*"
-              />
+              <input type="file" ref={fileInputRef} onChange={handleLogoChange} className="hidden" accept="image/*" />
             </div>
-            <div className="text-center sm:text-left">
-              <h4 className="text-lg font-black text-gray-900">Company Logo</h4>
-              <p className="text-sm text-gray-500 mb-3">Update your brand identity across the dashboard</p>
-              <div className="flex space-x-2">
-                <button
-                  type="button"
-                  onClick={triggerFileInput}
-                  className="px-4 py-2 bg-white border border-gray-200 text-xs font-bold text-gray-700 rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
-                >
-                  Upload New
-                </button>
+            <div className="text-center sm:text-left flex-1">
+              <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight leading-none mb-1">Company Branding</h4>
+              <div className="flex space-x-2 mt-2">
+                <button type="button" onClick={triggerFileInput} className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[9px] font-black text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-50 transition-colors uppercase tracking-widest">Upload</button>
                 {logo && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLogo(null);
-                      setCompanySettings(prev => ({ ...prev, companyLogo: '' }));
-                    }}
-                    className="px-4 py-2 bg-rose-50 text-xs font-bold text-rose-600 rounded-xl hover:bg-rose-100 transition-colors"
-                  >
-                    Remove
-                  </button>
+                  <button type="button" onClick={() => { setLogo(null); setCompanySettings(prev => ({ ...prev, companyLogo: '' })); }} className="px-3 py-1 bg-rose-50 dark:bg-rose-500/10 text-[9px] font-black text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-100 transition-colors uppercase tracking-widest">Remove</button>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-1">
-              <label className={labelClasses}>Company Identity Name</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="space-y-1.5">
+              <label className={labelClasses}>Company Identity</label>
               <input
                 type="text"
                 value={companySettings.companyName}
@@ -300,7 +274,7 @@ const Settings: React.FC = () => {
                 className={inputClasses}
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <label className={labelClasses}>Primary Admin Email</label>
               <input
                 type="email"
@@ -311,31 +285,26 @@ const Settings: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-1 bg-blue-600 rounded-full"></div>
-              <h4 className="font-black text-gray-900 uppercase tracking-widest text-sm">Working Hours Policy</h4>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-1">
-                <label className={labelClasses}>Standard Check-in</label>
-                <div className="relative">
-                  <input
-                    type="time"
-                    value={companySettings.workingHours.checkIn}
-                    onChange={(e) => setCompanySettings({
-                      ...companySettings,
-                      workingHours: { ...companySettings.workingHours, checkIn: e.target.value }
-                    })}
-                    className={inputClasses}
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-                </div>
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-blue-600 rounded-full"></div>
+              Check-in Protocol
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className={labelClasses}>Daily Check-in</label>
+                <input
+                  type="time"
+                  value={companySettings.workingHours.checkIn}
+                  onChange={(e) => setCompanySettings({
+                    ...companySettings,
+                    workingHours: { ...companySettings.workingHours, checkIn: e.target.value }
+                  })}
+                  className={inputClasses}
+                />
               </div>
-              <div className="space-y-1">
-                <label className={labelClasses}>Grace Period (Min)</label>
+              <div className="space-y-1.5">
+                <label className={labelClasses}>Grace Limit (Min)</label>
                 <input
                   type="number"
                   value={companySettings.workingHours.gracePeriod}
@@ -346,81 +315,79 @@ const Settings: React.FC = () => {
                   className={inputClasses}
                 />
               </div>
-              <div className="space-y-1">
-                <label className={labelClasses}>Work Day End</label>
-                <div className="relative">
-                  <input
-                    type="time"
-                    value={companySettings.workingHours.checkOut}
-                    onChange={(e) => setCompanySettings({
-                      ...companySettings,
-                      workingHours: { ...companySettings.workingHours, checkOut: e.target.value }
-                    })}
-                    className={inputClasses}
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-                </div>
+              <div className="space-y-1.5">
+                <label className={labelClasses}>Check-out</label>
+                <input
+                  type="time"
+                  value={companySettings.workingHours.checkOut}
+                  onChange={(e) => setCompanySettings({
+                    ...companySettings,
+                    workingHours: { ...companySettings.workingHours, checkOut: e.target.value }
+                  })}
+                  className={inputClasses}
+                />
               </div>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-1 bg-blue-600 rounded-full"></div>
-              <h4 className="font-black text-gray-900 uppercase tracking-widest text-sm">Weekend Policy</h4>
-            </div>
-            <div className="flex flex-wrap gap-4">
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-blue-600 rounded-full"></div>
+              Weekend Policy
+            </h4>
+            <div className="flex flex-wrap gap-2">
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                <label key={day} className="flex items-center space-x-3 cursor-pointer p-4 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:border-blue-200 transition-all hover:shadow-md group">
+                <label key={day} className={`flex items-center space-x-2 cursor-pointer p-2 px-3 rounded-lg border transition-all ${companySettings.weekendPolicy.includes(day)
+                  ? 'bg-blue-600 border-blue-600 text-white'
+                  : 'bg-slate-50 dark:bg-slate-950/30 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                  }`}>
                   <input
                     type="checkbox"
                     checked={companySettings.weekendPolicy.includes(day)}
                     onChange={() => toggleWeekendDay(day)}
-                    className="w-5 h-5 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer"
+                    className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-0 transition-all cursor-pointer"
                   />
-                  <span className="text-sm font-bold text-gray-700 group-hover:text-blue-600">{day}</span>
+                  <span className="text-[11px] font-black uppercase tracking-tight">{day}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="pt-6 flex justify-end">
-            <button type="submit" className="w-full sm:w-auto bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all active:scale-95">
-              Save All Changes
+          <div className="pt-2 flex justify-end">
+            <button type="submit" className="w-full sm:w-auto bg-blue-600 text-white px-8 py-2 md:py-3 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-500/10 transition-all active:scale-95">
+              Save Configuration
             </button>
           </div>
         </form>
       </div>
 
-      <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-8 border-b border-gray-50 bg-gray-50/30">
-          <h3 className="text-2xl font-black text-gray-900">Role & Permissions</h3>
-          <p className="text-sm text-gray-500 font-medium">Manage what different user roles can access</p>
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-950/20">
+          <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Access Control</h3>
+          <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-widest leading-none mt-1">Manage role-based permissions</p>
         </div>
-        <div className="p-8">
-          <div className="space-y-4">
+        <div className="p-6">
+          <div className="space-y-3">
             {[
-              { role: 'Admin', users: 3, description: 'Full system access and data modification', color: 'bg-blue-600' },
-              { role: 'Manager', users: 12, description: 'Access to department employees and leave approval', color: 'bg-indigo-600' },
-              { role: 'Employee', users: 109, description: 'View own dashboard and request leaves', color: 'bg-emerald-600' },
+              { role: 'Admin', users: 3, description: 'Full system sovereignty and configuration control', color: 'bg-blue-600' },
+              { role: 'Manager', users: 12, description: 'Team management and approval authority', color: 'bg-indigo-600' },
+              { role: 'Employee', users: 109, description: 'Standard platform usage and self-service', color: 'bg-emerald-600' },
             ].map((role, i) => (
-              <div key={i} className="flex items-center justify-between p-6 rounded-3xl border border-gray-100 hover:border-blue-100 transition-all group hover:shadow-lg hover:bg-blue-50/10">
-                <div className="flex items-center space-x-5">
-                  <div className={`w-12 h-12 ${role.color} rounded-2xl flex items-center justify-center text-white font-black shadow-lg`}>
+              <div key={i} className="flex items-center justify-between p-3 md:p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-500 transition-all group hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-10 h-10 ${role.color} rounded-lg flex items-center justify-center text-white text-sm font-black shadow-md`}>
                     {role.role[0]}
                   </div>
                   <div>
-                    <div className="flex items-center space-x-3">
-                      <span className="font-black text-gray-900 text-lg">{role.role}</span>
-                      <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded-lg uppercase font-black tracking-widest">{role.users} Active Users</span>
+                    <div className="flex items-center space-x-2 mb-0.5">
+                      <span className="font-black text-slate-900 dark:text-white text-[13px] uppercase tracking-tight leading-none">{role.role}</span>
+                      <span className="text-[8px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded uppercase font-black tracking-widest">{role.users} Users</span>
                     </div>
-                    <p className="text-sm text-gray-500 font-medium">{role.description}</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-500 font-bold uppercase tracking-tight leading-none">{role.description}</p>
                   </div>
                 </div>
-                <button className="px-5 py-2.5 text-blue-600 text-xs font-black uppercase tracking-widest hover:bg-blue-50 rounded-xl transition-all border border-transparent hover:border-blue-100">
-                  Edit Permissions
+                <button className="px-3 py-1.5 text-blue-600 dark:text-blue-400 text-[9px] font-black uppercase tracking-widest hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-500/20">
+                  Settings
                 </button>
               </div>
             ))}

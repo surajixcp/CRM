@@ -28,6 +28,10 @@ const settingsSchema = new mongoose.Schema({
         requireApproval: { type: Boolean, default: true },
         notifyStaff: { type: Boolean, default: true },
         enableHalfDay: { type: Boolean, default: false }
+    },
+    payroll: {
+        monthlyBudget: { type: Number, default: 0 },
+        salaryDate: { type: Number, default: 1 } // Day of the month (1-31)
     }
 }, {
     timestamps: true

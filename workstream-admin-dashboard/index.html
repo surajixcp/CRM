@@ -1,28 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WorkStream Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        offwhite: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
+            background-color: #020617;
+            color: #f8fafc;
             -webkit-font-smoothing: antialiased;
         }
-        
+
         @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.98) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from {
+                opacity: 0;
+                transform: scale(0.98) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         @keyframes slideInRight {
-            from { transform: translateX(20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .animate-fade-scale {
@@ -36,29 +73,34 @@
         ::-webkit-scrollbar {
             width: 6px;
         }
+
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #0f172a;
         }
+
         ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
+            background: #334155;
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
+            background: #475569;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         button {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -75,13 +117,13 @@
         }
 
         .login-bg {
-            background: linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), 
-                        url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1920&q=80');
+            background: linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)),
+                url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
         }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react/": "https://esm.sh/react@^19.2.3/",
@@ -92,10 +134,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/index.css">
 </head>
+
 <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

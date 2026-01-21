@@ -23,7 +23,8 @@ export enum ProjectStatus {
 export enum AttendanceStatus {
   PRESENT = 'Present',
   ABSENT = 'Absent',
-  LEAVE = 'Leave'
+  LEAVE = 'Leave',
+  UNPAID_LEAVE = 'unpaid_leave'
 }
 
 export type NotificationType = 'meeting' | 'leave' | 'project';
@@ -72,6 +73,7 @@ export interface LeaveRequest {
   to?: string;
   reason: string;
   status: string | LeaveStatus;
+  leaveDuration?: number;
 }
 
 export interface AttendanceLog {
@@ -82,6 +84,7 @@ export interface AttendanceLog {
   status: string | AttendanceStatus;
   checkInLocation?: string;
   checkOutLocation?: string;
+  leaveDuration?: number;
 }
 
 export interface UserProfile {

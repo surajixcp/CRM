@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { salaryService } from '../src/api/salaryService';
+import { settingService, CompanySettings } from '../src/api/settingService';
 import { SalaryRecord } from '../types';
-import { X, Edit2 } from 'lucide-react';
+import { X, Edit2, Calendar } from 'lucide-react';
 
 const Salary: React.FC = () => {
   const [salaries, setSalaries] = useState<SalaryRecord[]>([]);
@@ -14,9 +15,33 @@ const Salary: React.FC = () => {
     status: 'Unpaid'
   });
 
+  // Payroll Settings State
+  const [settings, setSettings] = useState<CompanySettings | null>(null);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsFormData, setSettingsFormData] = useState({
+    monthlyBudget: 0,
+    salaryDate: 1
+  });
+
   useEffect(() => {
     fetchSalaries();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const data = await settingService.getSettings();
+      setSettings(data);
+      if (data.payroll) {
+        setSettingsFormData({
+          monthlyBudget: data.payroll.monthlyBudget,
+          salaryDate: data.payroll.salaryDate
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch settings', err);
+    }
+  };
 
   const fetchSalaries = async () => {
     try {
@@ -73,68 +98,116 @@ const Salary: React.FC = () => {
     }
   };
 
+  const handleUpdatePayrollSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await settingService.updateSettings({
+        payroll: {
+          monthlyBudget: settingsFormData.monthlyBudget,
+          salaryDate: settingsFormData.salaryDate
+        }
+      });
+      fetchSettings();
+      setIsSettingsModalOpen(false);
+      alert('Payroll settings updated successfully');
+    } catch (err) {
+      console.error('Failed to update payroll settings', err);
+      alert('Failed to update payroll settings');
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-blue-600 p-6 rounded-xl text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <p className="text-blue-100 text-sm font-medium">Monthly Payroll Budget</p>
-          <h2 className="text-3xl font-bold">₹245,600.00</h2>
+    <div className="space-y-4">
+      {/* Analytics Card */}
+      <div className="bg-blue-600 dark:bg-blue-700/80 backdrop-blur-xl p-4 md:p-5 rounded-xl text-white flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg shadow-blue-500/20">
+        <div className="flex items-center space-x-4">
+          <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-md border border-white/20">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div>
+            <p className="text-blue-100 text-[10px] font-black uppercase tracking-widest leading-none mb-1">Monthly Payroll Budget</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-black tracking-tight">₹{settings?.payroll?.monthlyBudget.toLocaleString() || '0'}<span className="text-blue-200/50 text-sm">.00</span></h2>
+              <button
+                onClick={() => setIsSettingsModalOpen(true)}
+                className="p-1 hover:bg-white/20 rounded-md transition-colors"
+                title="Edit Budget & Date"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            {settings?.payroll?.salaryDate && (
+              <p className="text-blue-200/60 text-[9px] font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
+                <Calendar className="w-2.5 h-2.5" /> Next Release: Day {settings.payroll.salaryDate}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors">Generate Reports</button>
+        <div className="flex space-x-2">
+          <button className="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Report</button>
           <button
             onClick={handleProcessBatch}
-            className="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold shadow-lg transition-transform active:scale-95"
+            className="px-4 py-1.5 bg-white text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95"
           >
-            Process Batch Payroll
+            Process Batch
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h3 className="font-bold text-lg">Employee Salary List</h3>
+      <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl rounded-xl shadow-sm border border-slate-100 dark:border-slate-800/50 overflow-hidden">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800/50 flex items-center justify-between">
+          <h3 className="font-black text-sm text-slate-800 dark:text-white uppercase tracking-tight">Employee Salary List</h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Total: {salaries.length}</span>
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr className="text-gray-500 text-xs font-semibold uppercase tracking-wider">
-                <th className="px-6 py-4">Employee</th>
-                <th className="px-6 py-4">Month</th>
-                <th className="px-6 py-4">Base Salary</th>
-                <th className="px-6 py-4">Deductions</th>
-                <th className="px-6 py-4">Net Pay</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-slate-50/50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800/50">
+              <tr className="text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-widest">
+                <th className="px-4 py-3">Employee</th>
+                <th className="px-4 py-3">Month</th>
+                <th className="px-4 py-3">Base</th>
+                <th className="px-4 py-3">Deductions</th>
+                <th className="px-4 py-3">Net Pay</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {salaries.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{item.employeeName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.month}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹{item.baseSalary.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-500">-₹{item.deductions.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">₹{item.netPay.toLocaleString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${item.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-7 h-7 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-100 dark:border-blue-500/20 flex items-center justify-center text-[10px] font-black text-blue-600 dark:text-blue-400">
+                        {item.employeeName[0]}
+                      </div>
+                      <span className="text-[11px] font-black text-slate-800 dark:text-slate-200 uppercase tracking-tight">{item.employeeName}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-tighter uppercase">{item.month}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[11px] font-black text-slate-700 dark:text-slate-300">₹{item.baseSalary.toLocaleString()}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[11px] font-black text-rose-500">-₹{item.deductions.toLocaleString()}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[11px] font-black text-slate-900 dark:text-white">₹{item.netPay.toLocaleString()}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md ${item.status === 'Paid' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20'
                       }`}>
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <td className="px-4 py-3 whitespace-nowrap text-right">
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => openEditModal(item)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                        className="p-1.5 text-slate-400 hover:text-blue-500 transition-colors"
                         title="Edit Record"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       {item.status === 'Unpaid' ? (
-                        <button onClick={() => handlePay(item.id)} className="bg-blue-600 text-white px-3 py-1 text-xs font-bold rounded-md hover:bg-blue-700 shadow-sm transition-all">Pay Now</button>
+                        <button onClick={() => handlePay(item.id)} className="bg-blue-600 text-white px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md hover:bg-blue-700 shadow-lg shadow-blue-500/10 transition-all active:scale-95">Pay Now</button>
                       ) : (
-                        <button className="text-gray-400 border border-gray-200 px-3 py-1 text-xs font-medium rounded-md hover:bg-gray-50">Receipt</button>
+                        <button className="text-slate-400 dark:text-slate-500 border border-slate-100 dark:border-slate-800 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md hover:bg-slate-50 dark:hover:bg-slate-800">Receipt</button>
                       )}
                     </div>
                   </td>
@@ -147,66 +220,129 @@ const Salary: React.FC = () => {
 
       {/* Edit Salary Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden">
-            <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 scale-90 md:scale-100">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
               <div>
-                <h3 className="text-xl font-black text-gray-900">Edit Salary Record</h3>
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">{editingSalary?.employeeName}</p>
+                <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight uppercase">Edit Salary Record</h3>
+                <p className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">{editingSalary?.employeeName}</p>
               </div>
-              <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400">
-                <X className="w-6 h-6" />
+              <button onClick={() => setIsEditModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleUpdateSalary} className="p-8 space-y-6">
-              <div className="space-y-1">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Base Salary (₹)</label>
+            <form onSubmit={handleUpdateSalary} className="p-6 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Base Salary (₹)</label>
                 <input
                   type="number"
                   value={editFormData.baseSalary}
                   onChange={(e) => setEditFormData({ ...editFormData, baseSalary: Number(e.target.value) })}
-                  className="w-full border border-gray-200 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Deductions (₹)</label>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Deductions (₹)</label>
                 <input
                   type="number"
                   value={editFormData.deductions}
                   onChange={(e) => setEditFormData({ ...editFormData, deductions: Number(e.target.value) })}
-                  className="w-full border border-gray-200 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Payment Status</label>
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Payment Status</label>
                 <select
                   value={editFormData.status}
                   onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
-                  className="w-full border border-gray-200 bg-gray-50 rounded-2xl p-4 focus:bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold appearance-none cursor-pointer"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all appearance-none cursor-pointer"
                 >
                   <option value="Unpaid">Unpaid</option>
                   <option value="Paid">Paid</option>
                 </select>
               </div>
 
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="flex-1 py-4 px-6 bg-gray-100 text-gray-500 font-bold rounded-2xl hover:bg-gray-200 transition-all uppercase tracking-widest text-xs"
+                  className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-500 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-4 px-6 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all uppercase tracking-widest text-xs"
+                  className="flex-[1.5] px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95"
                 >
                   Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Payroll Settings Modal */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 scale-90 md:scale-100">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <div>
+                <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight uppercase">Payroll Settings</h3>
+                <p className="text-[9px] text-blue-500 font-bold uppercase tracking-widest mt-0.5">Global Configuration</p>
+              </div>
+              <button onClick={() => setIsSettingsModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdatePayrollSettings} className="p-6 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Monthly Budget (₹)</label>
+                <input
+                  type="number"
+                  value={settingsFormData.monthlyBudget}
+                  onChange={(e) => setSettingsFormData({ ...settingsFormData, monthlyBudget: Number(e.target.value) })}
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Salary Release Date (Day 1-31)</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={settingsFormData.salaryDate}
+                    onChange={(e) => setSettingsFormData({ ...settingsFormData, salaryDate: Number(e.target.value) })}
+                    className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    required
+                  />
+                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                </div>
+                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-tight ml-0.5 mt-1">Payroll will be processed on this day of every month.</p>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsSettingsModalOpen(false)}
+                  className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-800 text-slate-500 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-[1.5] px-4 py-2 bg-blue-600 text-white rounded-lg font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95"
+                >
+                  Save Global Settings
                 </button>
               </div>
             </form>

@@ -11,6 +11,7 @@ const {
     deleteUser,
     updateProfile
 } = require('../controllers/authController');
+const { getEmployeeOverview } = require('../controllers/employeeOverviewController');
 const { protect, admin, subAdmin } = require('../middlewares/authMiddleware');
 
 router.post('/login', loginUser);
@@ -19,6 +20,7 @@ router.post('/create-employee', protect, subAdmin, createEmployee);
 router.post('/create-subadmin', protect, admin, createSubAdmin);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
+router.get('/user-overview/:userId', protect, subAdmin, getEmployeeOverview);
 
 // User Management Routes
 router.get('/users', protect, subAdmin, getUsers);

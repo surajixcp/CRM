@@ -29,6 +29,7 @@ const loginUser = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            joiningDate: user.joiningDate,
             token: generateToken(user._id),
         });
     } else {
@@ -62,6 +63,7 @@ const registerAdmin = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            joiningDate: user.joiningDate,
             token: generateToken(user._id),
         });
     } else {
@@ -184,7 +186,8 @@ const getMe = async (req, res) => {
             image: user.image,
             phone: user.phone,
             location: user.location,
-            workMode: user.workMode
+            workMode: user.workMode,
+            joiningDate: user.joiningDate
         });
     } else {
         res.status(404).json({ message: 'User not found' });
@@ -323,6 +326,7 @@ const updateProfile = async (req, res) => {
             location: updatedUser.location,
             workMode: updatedUser.workMode,
             image: updatedUser.image,
+            joiningDate: updatedUser.joiningDate,
             token: generateToken(updatedUser._id),
         });
     } catch (error) {

@@ -14,6 +14,7 @@ import MeetingsScreen from './screens/Meetings';
 import SettingsScreen from './screens/Settings';
 import ProfileScreen from './screens/Profile';
 import LoginScreen from './screens/Login';
+import EmployeeOverviewScreen from './screens/EmployeeOverview';
 
 const AUTH_KEY = 'workstream_auth_session';
 
@@ -22,14 +23,18 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem(AUTH_KEY) === 'true';
   });
-  
+
   const [activeScreen, setActiveScreen] = useState<ScreenType>('Dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [screenKey, setScreenKey] = useState(0);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
 
   // Trigger animation on screen change
-  const handleNavigate = (screen: ScreenType) => {
+  const handleNavigate = (screen: ScreenType, employeeId: string | null = null) => {
+    if (employeeId) {
+      setSelectedEmployeeId(employeeId);
+    }
     setActiveScreen(screen);
     setScreenKey(prev => prev + 1);
   };
@@ -80,7 +85,7 @@ const App: React.FC = () => {
   const renderScreen = () => {
     switch (activeScreen) {
       case 'Dashboard': return <DashboardScreen />;
-      case 'Employees': return <EmployeesScreen />;
+      case 'Employees': return <EmployeesScreen onNavigate={handleNavigate} />;
       case 'Attendance': return <AttendanceScreen />;
       case 'Leaves': return <LeavesScreen />;
       case 'Projects': return <ProjectsScreen />;
@@ -89,29 +94,36 @@ const App: React.FC = () => {
       case 'Meetings': return <MeetingsScreen />;
       case 'Settings': return <SettingsScreen />;
       case 'Profile': return <ProfileScreen />;
+      case 'EmployeeOverview':
+        return selectedEmployeeId ? (
+          <EmployeeOverviewScreen
+            userId={selectedEmployeeId}
+            onBack={() => handleNavigate('Employees')}
+          />
+        ) : <EmployeesScreen onNavigate={handleNavigate} />;
       default: return <DashboardScreen />;
     }
   };
 
   return (
-    <div className="flex h-screen overflow-hidden text-gray-800 selection:bg-blue-100 selection:text-blue-700">
-      <Sidebar 
-        activeScreen={activeScreen} 
-        onNavigate={handleNavigate} 
+    <div className="flex h-screen overflow-hidden text-slate-900 dark:text-slate-100 bg-white dark:bg-[#020617] transition-colors duration-300 selection:bg-blue-500/30 selection:text-blue-200">
+      <Sidebar
+        activeScreen={activeScreen}
+        onNavigate={handleNavigate}
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         onLogout={handleLogout}
       />
 
-      <div className="flex flex-col flex-1 min-w-0 bg-[#f8fafc] overflow-hidden">
-        <Navbar 
-          title={activeScreen} 
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+      <div className="flex flex-col flex-1 min-w-0 bg-slate-50/50 dark:bg-slate-950 overflow-hidden transition-colors duration-300">
+        <Navbar
+          title={activeScreen}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           onNavigate={handleNavigate}
         />
-        
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
-          <div key={screenKey} className="max-w-7xl mx-auto animate-fade-scale">
+
+        <main className="flex-1 overflow-y-auto p-3 md:p-4 lg:p-5 scroll-smooth custom-scrollbar">
+          <div key={screenKey} className="max-w-[1600px] mx-auto animate-fade-scale">
             {renderScreen()}
           </div>
         </main>

@@ -9,7 +9,8 @@ export type ScreenType =
   | 'Holidays'
   | 'Meetings'
   | 'Settings'
-  | 'Profile';
+  | 'Profile'
+  | 'EmployeeOverview';
 
 export interface Employee {
   id: string;

@@ -45,17 +45,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-6 relative overflow-hidden">
       {/* Abstract Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-100/50 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-100/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-lg animate-scale-in relative z-10">
-        <div className="bg-white rounded-[40px] shadow-premium border border-slate-100 overflow-hidden">
+        <div className="bg-slate-900/60 backdrop-blur-2xl rounded-[40px] shadow-2xl border border-slate-800 overflow-hidden">
           {/* Header Branding */}
-          <div className="bg-slate-900 p-10 md:p-12 text-center relative overflow-hidden">
+          <div className="bg-slate-950/80 p-10 md:p-12 text-center relative overflow-hidden border-b border-slate-800">
             <div className="absolute top-0 right-0 p-10 opacity-10 rotate-12">
-              <ShieldCheck className="w-32 h-32 text-white" />
+              <ShieldCheck className="w-32 h-32 text-indigo-500" />
             </div>
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-indigo-600 rounded-[22px] flex items-center justify-center text-white font-black text-3xl shadow-2xl shadow-indigo-500/20">
@@ -63,46 +63,46 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               </div>
             </div>
             <h1 className="text-2xl md:text-3xl font-[900] text-white tracking-tight mb-2">Workspace Access</h1>
-            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Sign in to your enterprise account</p>
+            <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">Sign in to your enterprise account</p>
           </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="p-10 md:p-12 space-y-6">
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity (Email)</label>
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Identity (Email)</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full bg-slate-50 border border-transparent rounded-[20px] pl-12 pr-5 py-4 text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-[20px] pl-12 pr-5 py-4 text-sm font-bold text-slate-200 focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center px-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Secret Key</label>
-                  <button type="button" className="text-[10px] font-black text-indigo-500 uppercase tracking-widest hover:text-indigo-700">Forgot?</button>
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Secret Key</label>
+                  <button type="button" className="text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:text-indigo-300">Forgot?</button>
                 </div>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
                   <input
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-slate-50 border border-transparent rounded-[20px] pl-12 pr-14 py-4 text-sm font-bold text-slate-800 focus:bg-white focus:ring-4 focus:ring-indigo-50 focus:border-indigo-500 transition-all outline-none"
+                    className="w-full bg-slate-950/50 border border-slate-800 rounded-[20px] pl-12 pr-14 py-4 text-sm font-bold text-slate-200 focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors p-1"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-indigo-400 transition-colors p-1"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -130,7 +130,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-sm tracking-[0.2em] uppercase transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center justify-center gap-3 hover:bg-indigo-600 disabled:opacity-70 group mt-4"
+              className="w-full py-5 bg-indigo-600 text-white rounded-[24px] font-black text-sm tracking-[0.2em] uppercase transition-all shadow-xl shadow-indigo-900/40 active:scale-95 flex items-center justify-center gap-3 hover:bg-indigo-700 disabled:opacity-70 group mt-4"
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <>
