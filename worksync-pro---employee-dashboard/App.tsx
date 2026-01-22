@@ -33,6 +33,7 @@ import MeetingsScreen from './screens/MeetingsScreen';
 import HolidaysScreen from './screens/HolidaysScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import LoginScreen from './screens/LoginScreen';
+import MobileNav from './components/MobileNav';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -158,55 +159,61 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#020617] flex text-slate-900 dark:text-slate-100 transition-colors duration-300 font-inter">
       {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && window.innerWidth < 1024 && (
+      {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-[60] backdrop-blur-sm animate-in fade-in duration-300"
+          className="lg:hidden fixed inset-0 bg-slate-950/40 z-[60] backdrop-blur-[2px] animate-in fade-in duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] w-52 bg-white dark:bg-slate-950/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-800/50 transform transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-xl lg:shadow-none' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-[70] w-52 lg:w-64 bg-white dark:bg-slate-950/80 backdrop-blur-xl border-r border-slate-200/60 dark:border-slate-800/50 transform transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-xl lg:shadow-none' : '-translate-x-full'
           }`}
       >
         <div className="h-full flex flex-col">
-          <div className="px-5 h-12 flex items-center gap-2.5 shrink-0 border-b border-slate-100 dark:border-slate-800/50">
-            <div className="w-6 h-6 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-xs shadow-lg shadow-indigo-500/20 group cursor-pointer active:scale-95 transition-all overflow-hidden shrink-0">
+          <div className="px-4 h-11 lg:h-16 flex items-center gap-2 shrink-0 border-b border-slate-100 dark:border-slate-800/50">
+            <div className="w-5 h-5 lg:w-8 lg:h-8 bg-indigo-600 rounded-md lg:rounded-xl flex items-center justify-center text-white font-black text-[10px] lg:text-base shadow-lg shadow-indigo-500/20 group cursor-pointer active:scale-95 transition-all overflow-hidden shrink-0">
               {companySettings.logo ? (
                 <img src={companySettings.logo} alt="L" className="w-full h-full object-cover" />
               ) : (
                 <span className="group-hover:rotate-12 transition-transform">{companySettings.name[0]}</span>
               )}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-black tracking-tight text-slate-800 dark:text-white leading-none truncate">{companySettings.name}</span>
-              <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Enterprise</span>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-[10px] lg:text-sm font-black tracking-tight text-slate-800 dark:text-white leading-none truncate">{companySettings.name}</span>
+              <span className="text-[6px] lg:text-[10px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Enterprise</span>
             </div>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="lg:hidden p-1 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
-          <nav className="flex-1 px-2.5 space-y-0.5 overflow-y-auto mt-4 scrollbar-hide">
+          <nav className="flex-1 px-2 lg:px-4 space-y-0.5 lg:space-y-1 overflow-y-auto mt-3 lg:mt-6 scrollbar-hide">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleScreenChange(item.id as Screen)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[11px] font-bold transition-all relative active:scale-[0.98] group ${currentScreen === item.id
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                className={`w-full flex items-center gap-2 lg:gap-3 px-2 lg:px-4 py-1 lg:py-2.5 rounded-md lg:rounded-xl text-[9px] lg:text-sm font-bold transition-all relative active:scale-[0.98] group ${currentScreen === item.id
+                  ? 'bg-indigo-600 text-white shadow-sm'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-white'
                   }`}
               >
-                <item.icon className={`w-4 h-4 transition-transform ${currentScreen === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
+                <item.icon className={`w-3 h-3 lg:w-5 lg:h-5 transition-transform ${currentScreen === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
                 {item.label}
               </button>
             ))}
           </nav>
 
-          <div className="p-2.5 mt-auto space-y-1 shrink-0 border-t border-slate-100 dark:border-slate-800/50">
+          <div className="p-2 lg:p-4 mt-auto space-y-1 shrink-0 border-t border-slate-100 dark:border-slate-800/50">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[11px] font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all active:scale-95 group"
+              className="w-full flex items-center gap-1.5 lg:gap-3 px-2 lg:px-4 py-1 lg:py-3 rounded-md lg:rounded-xl text-[9px] lg:text-sm font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all active:scale-95 group"
             >
-              <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              <LogOut className="w-3 h-3 lg:w-5 lg:h-5 transition-transform group-hover:-translate-x-1" />
               Logout
             </button>
           </div>
@@ -214,35 +221,35 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Container */}
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-52' : 'ml-0'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
         {/* Header */}
-        <header className="h-11 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/50 sticky top-0 z-50 px-4 flex items-center justify-between shrink-0 transition-colors duration-300">
-          <div className="flex items-center gap-3">
+        <header className="h-8.5 lg:h-16 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/50 sticky top-0 z-50 px-2 lg:px-6 flex items-center justify-between shrink-0 transition-colors duration-300">
+          <div className="flex items-center gap-2 lg:gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-colors active:scale-95"
+              className="p-1 rounded-md text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-colors active:scale-95"
             >
-              {isSidebarOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
+              {isSidebarOpen ? <X className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
             </button>
             <div className="flex flex-col">
-              <h1 className="text-sm font-bold text-slate-800 dark:text-white tracking-tight transition-all truncate max-w-[120px] md:max-w-none">
+              <h1 className="text-[11px] lg:text-xl font-black text-slate-800 dark:text-white tracking-tight transition-all truncate max-w-[90px] md:max-w-none leading-none">
                 {currentScreen}
               </h1>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{companySettings.name} Pro</span>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="text-[6px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{companySettings.name}</span>
                 <span className="hidden md:inline w-0.5 h-0.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-                <span className="hidden md:inline text-[8px] font-bold text-indigo-500 uppercase tracking-widest">v2.4.0</span>
+                <span className="hidden md:inline text-[6px] lg:text-[10px] font-bold text-indigo-500 uppercase tracking-widest leading-none">v2.4</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-3">
             <div className="hidden sm:flex items-center relative group">
-              <Search className="w-3 h-3 absolute left-3 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+              <Search className="w-2.5 h-2.5 absolute left-2.5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Search resources..."
-                className="pl-8 pr-3 py-1.5 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg text-[10px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 w-32 md:w-56 transition-all outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
+                className="pl-7 pr-3 py-1 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg text-[9px] font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 w-32 md:w-48 transition-all outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
               />
             </div>
 
@@ -255,22 +262,22 @@ const App: React.FC = () => {
                   setIsNotificationsOpen(!isNotificationsOpen);
                   setIsProfileMenuOpen(false);
                 }}
-                className={`p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-all active:scale-95 ${isNotificationsOpen ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : ''}`}
+                className={`p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-all active:scale-95 ${isNotificationsOpen ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : ''}`}
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-3.5 h-3.5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full border border-white dark:border-slate-900"></span>
+                  <span className="absolute top-1 right-1 w-1 h-1 bg-rose-500 rounded-full border border-white dark:border-slate-900"></span>
                 )}
               </button>
 
               {isNotificationsOpen && (
                 <>
                   <div className="fixed inset-0 z-[80]" onClick={() => setIsNotificationsOpen(false)} />
-                  <div className="absolute right-0 mt-3 w-64 sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-[90] animate-scale-in">
-                    <div className="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
+                  <div className="absolute right-0 mt-2 w-56 sm:w-72 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-[90] animate-scale-in">
+                    <div className="p-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">
                       <div>
-                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-xs tracking-tight">Activity Center</h3>
-                        <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Updates & Tasks</p>
+                        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-[11px] tracking-tight">Activity Center</h3>
+                        <p className="text-[7px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Updates & Tasks</p>
                       </div>
                       {unreadCount > 0 && (
                         <button
@@ -345,21 +352,21 @@ const App: React.FC = () => {
               {isProfileMenuOpen && (
                 <>
                   <div className="fixed inset-0 z-[80]" onClick={() => setIsProfileMenuOpen(false)} />
-                  <div className="absolute right-0 mt-3 w-44 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 py-1.5 z-[90] animate-scale-in">
-                    <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
-                      <Settings className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-45 transition-transform" />
+                  <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 py-1 z-[90] animate-scale-in">
+                    <button className="w-full flex items-center gap-2 px-2.5 py-1 text-[10px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
+                      <Settings className="w-3 h-3 text-slate-400 group-hover:rotate-45 transition-transform" />
                       Settings
                     </button>
-                    <button className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
-                      <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+                    <button className="w-full flex items-center gap-2 px-2.5 py-1 text-[10px] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold group">
+                      <HelpCircle className="w-3 h-3 text-slate-400" />
                       Support
                     </button>
-                    <hr className="my-1 border-slate-100 dark:border-slate-800 mx-2" />
+                    <hr className="my-1 border-slate-100 dark:border-slate-800 mx-1.5" />
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2.5 px-3 py-1.5 text-[11px] text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-black transition-colors"
+                      className="w-full flex items-center gap-2 px-2.5 py-1 text-[10px] text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-black transition-colors"
                     >
-                      <LogOut className="w-3.5 h-3.5" />
+                      <LogOut className="w-3 h-3" />
                       Sign Out
                     </button>
                   </div>
@@ -367,16 +374,18 @@ const App: React.FC = () => {
               )}
             </div>
           </div>
-        </header>
+        </header >
 
         {/* Dynamic Content */}
-        <main className={`flex-1 p-3 md:p-5 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
+        < main className={`flex-1 p-3 md:p-5 pb-24 lg:pb-5 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
           <div className="max-w-[1600px] mx-auto">
             {renderScreen()}
           </div>
-        </main>
-      </div>
-    </div>
+        </main >
+
+        <MobileNav currentScreen={currentScreen} onNavigate={handleScreenChange} />
+      </div >
+    </div >
   );
 };
 

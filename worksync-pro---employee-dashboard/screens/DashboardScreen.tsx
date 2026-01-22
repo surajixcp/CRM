@@ -267,47 +267,47 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
       {/* Top Welcome Row */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="animate-in slide-in-from-left duration-700">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-            <span className="text-[8px] font-black text-amber-500 uppercase tracking-widest">Productivity Engine</span>
+          <div className="flex items-center gap-1 mb-0.5">
+            <Zap className="w-2 h-2 text-amber-500 fill-amber-500" />
+            <span className="text-[6px] font-black text-amber-500 uppercase tracking-widest leading-none">Productivity Engine</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase">{user?.name?.split(' ')[0] || 'Employee'}'s Dashboard</h2>
-          <div className="flex items-center gap-3 mt-1.5">
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-[9px] flex items-center gap-2 uppercase tracking-tight leading-none">
-              Weekly Sync Status: <span className="text-blue-600 dark:text-blue-400 font-black">85% COMPLETE</span>
+          <h2 className="text-[15px] lg:text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase">{user?.name?.split(' ')[0] || 'Employee'}'s Portal</h2>
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3 mt-1.5 lg:mt-2">
+            <p className="text-slate-500 dark:text-slate-400 font-bold text-[7px] lg:text-[11px] flex items-center gap-1 uppercase tracking-tight leading-none">
+              Weekly Sync: <span className="text-blue-600 dark:text-blue-400 font-black">85%</span>
             </p>
             {dailyRecord?.status === 'late' && (
-              <span className="flex items-center gap-1 text-[7px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-100 dark:border-rose-500/20 uppercase tracking-widest">
-                <Clock className="w-2 h-2" />
-                LATE ENTRY
+              <span className="flex items-center gap-1 text-[6px] lg:text-[10px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-1.5 lg:px-2.5 py-0.5 lg:py-1 rounded-md lg:rounded-lg border border-rose-100 dark:border-rose-500/20 uppercase tracking-widest leading-none">
+                <Clock className="w-1.5 h-1.5 lg:w-3 lg:h-3" />
+                LATE
               </span>
             )}
           </div>
         </div>
 
         {notification && (
-          <div className={`fixed top-6 right-6 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+          <div className={`fixed top-4 right-4 z-[100] animate-in slide-in-from-top-4 fade-in duration-300 px-3 py-2 rounded-md border shadow-2xl backdrop-blur-xl flex items-center gap-2 ${notification.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
             notification.type === 'error' ? 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400' :
               'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400'
             }`}>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${notification.type === 'success' ? 'bg-emerald-500 text-white' :
+            <div className={`w-7 h-7 rounded-sm flex items-center justify-center shrink-0 ${notification.type === 'success' ? 'bg-emerald-500 text-white' :
               notification.type === 'error' ? 'bg-rose-500 text-white' :
                 'bg-blue-500 text-white'
               }`}>
-              {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+              {notification.type === 'success' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Zap className="w-3.5 h-3.5" />}
             </div>
-            <p className="text-[11px] font-black uppercase tracking-tight">{notification.message}</p>
+            <p className="text-[10px] font-black uppercase tracking-tight">{notification.message}</p>
           </div>
         )}
 
-        <div className="flex items-center gap-2 animate-in slide-in-from-right duration-700">
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl w-full lg:w-auto px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-800/50 flex items-center gap-3 shadow-lg dark:shadow-2xl">
-            <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center shrink-0 border border-blue-500/20">
-              <Calendar className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+        <div className="flex items-center gap-1.5 animate-in slide-in-from-right duration-700 w-full lg:w-auto">
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl w-full lg:w-auto px-2 lg:px-4 py-1 lg:py-2.5 rounded-md lg:rounded-2xl border border-slate-100 dark:border-slate-800/50 flex items-center gap-1.5 lg:gap-3 shadow-sm lg:shadow-xl lg:shadow-slate-200/20">
+            <div className="w-5 h-5 lg:w-10 lg:h-10 bg-blue-500/10 rounded-sm lg:rounded-xl flex items-center justify-center shrink-0 border border-blue-500/20">
+              <Calendar className="w-2.5 h-2.5 lg:w-5 lg:h-5 text-blue-500 dark:text-blue-400" />
             </div>
             <div className="text-right flex-1 lg:flex-none">
-              <p className="font-black text-slate-700 dark:text-slate-100 text-[11px] tracking-tight">{currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
-              <p className="text-blue-600 dark:text-blue-400 font-black text-[10px] tabular-nums">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
+              <p className="font-black text-slate-700 dark:text-slate-100 text-[8.5px] lg:text-sm tracking-tight leading-none">{currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+              <p className="text-blue-600 dark:text-blue-400 font-black text-[7.5px] lg:text-base tabular-nums leading-none mt-0.5 lg:mt-1">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
             </div>
           </div>
         </div>
@@ -316,132 +316,130 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         {/* Left Column (8 units) */}
         <div className="lg:col-span-8 space-y-4 md:space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 lg:gap-6">
             {/* Check-in Widget */}
-            <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/30 transition-all active:scale-[0.99]">
-              <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.07] transition-all pointer-events-none">
-                <Clock className="w-24 h-24 text-slate-900 dark:text-white" />
+            <div className="col-span-2 md:col-span-1 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-2.5 lg:p-6 rounded-md lg:rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-sm lg:shadow-xl lg:shadow-slate-200/10 flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/30 transition-all active:scale-[0.99] lg:min-h-[220px]">
+              <div className="absolute -top-3 -right-3 p-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.07] transition-all pointer-events-none">
+                <Clock className="w-14 h-14 lg:w-32 lg:h-32 text-slate-900 dark:text-white" />
               </div>
-              <div className="space-y-4 relative z-10">
+              <div className="space-y-2 lg:space-y-4 relative z-10">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Time Registry</h3>
+                  <h3 className="text-[6.5px] lg:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Time Registry</h3>
                   {isCheckedIn && (
-                    <span className="flex items-center gap-1 text-[7px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-500/20">
-                      <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="flex items-center gap-1 text-[6.5px] lg:text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1 lg:px-2 py-0.5 lg:py-1 rounded-sm lg:rounded-lg border border-emerald-100 dark:border-emerald-500/20 uppercase tracking-widest leading-none">
+                      <div className="w-1 h-1 lg:w-1.5 lg:h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                       ACTIVE
                     </span>
                   )}
                 </div>
                 <div>
-                  <p className="text-2xl md:text-3xl font-black text-slate-800 dark:text-white tracking-tighter tabular-nums uppercase">{isCheckedIn ? 'Personnel In' : 'Personnel Out'}</p>
-                  <p className="text-slate-400 dark:text-slate-500 font-bold text-[8px] uppercase tracking-widest mt-0.5">
+                  <p className="text-base lg:text-4xl font-black text-slate-800 dark:text-white tracking-tighter tabular-nums uppercase leading-none">{isCheckedIn ? 'In Shift' : 'Off Shift'}</p>
+                  <p className="text-slate-400 dark:text-slate-500 font-bold text-[6.5px] lg:text-[10px] uppercase tracking-widest mt-1 lg:mt-2 leading-none">
                     {isCheckedIn ? `LOGGED: ${checkInTime}` : 'SHIFT INACTIVE'}
                   </p>
                 </div>
                 {companySettings && (
-                  <div className="bg-slate-50/50 dark:bg-slate-950/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/50">
-                    <div className="flex justify-between items-center text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                      <span>Protocol Shift</span>
+                  <div className="bg-slate-50/50 dark:bg-slate-950/40 p-1 lg:p-2.5 rounded-sm lg:rounded-xl border border-slate-100 dark:border-slate-800/50 lg:mt-4">
+                    <div className="flex justify-between items-center text-[6.5px] lg:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">
+                      <span>Shift</span>
                       <span className="text-blue-600 dark:text-blue-400 font-black tracking-tight">{companySettings.workingHours.checkIn} - {companySettings.workingHours.checkOut}</span>
                     </div>
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-1.5 lg:gap-4 lg:mt-6">
                   <button
                     onClick={handleCheckIn}
                     disabled={isCheckedIn}
-                    className={`w-full py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm ${isCheckedIn
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/10 shadow-lg'
+                    className={`w-full py-1.5 lg:py-3.5 rounded-md lg:rounded-xl font-black text-[7.5px] lg:text-[11px] tracking-widest uppercase transition-all flex items-center justify-center gap-1 lg:gap-2 active:scale-95 shadow-sm ${isCheckedIn
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700 font-bold'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/10'
                       }`}
                   >
                     Check In
-                    <ArrowRight className="w-3 h-3" />
+                    <ArrowRight className="w-2.5 h-2.5 lg:w-4 lg:h-4 text-white" />
                   </button>
                   <button
                     onClick={handleCheckOut}
                     disabled={!isCheckedIn || isCheckedOut || !isHalfShiftPassed}
-                    className={`w-full py-2.5 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm ${(!isCheckedIn || isCheckedOut || !isHalfShiftPassed)
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700'
-                      : 'bg-rose-600 text-white hover:bg-rose-700 shadow-rose-500/10 shadow-lg'
+                    className={`w-full py-1.5 lg:py-3.5 rounded-md lg:rounded-xl font-black text-[7.5px] lg:text-[11px] tracking-widest uppercase transition-all flex items-center justify-center gap-1 lg:gap-2 active:scale-95 shadow-sm ${(!isCheckedIn || isCheckedOut || !isHalfShiftPassed)
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700 font-bold'
+                      : 'bg-rose-600 text-white hover:bg-rose-700 shadow-rose-500/10'
                       }`}
-                    title={!isHalfShiftPassed && isCheckedIn ? "Check-out allowed after half-shift" : ""}
                   >
                     Check Out
-                    <ArrowRight className="w-3 h-3" />
+                    <ArrowRight className="w-2.5 h-2.5 lg:w-4 lg:h-4 text-white" />
                   </button>
                 </div>
               </div>
             </div>
 
             {/* Quick Metrics */}
-            <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-xl dark:shadow-2xl group transition-all">
-              <h3 className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-6">Stats Radar</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center transition-all group-hover:bg-emerald-500 group-hover:text-white border border-emerald-100 dark:border-emerald-500/20">
-                    <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="col-span-2 md:col-span-1 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-2.5 lg:p-6 rounded-md lg:rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-sm transition-all lg:shadow-xl lg:shadow-slate-200/10">
+              <h3 className="text-[6.5px] lg:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] mb-2.5 lg:mb-5 leading-none underline underline-offset-4 decoration-indigo-500/30">Stats Radar</h3>
+              <div className="grid grid-cols-2 gap-2 lg:gap-6">
+                <div className="space-y-1 lg:space-y-3">
+                  <div className="w-5 h-5 lg:w-11 lg:h-11 rounded-md lg:rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center transition-all border border-emerald-100 dark:border-emerald-500/20">
+                    <TrendingUp className="w-2.5 h-2.5 lg:w-6 lg:h-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Growth</p>
-                    <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">+12.4%</p>
+                    <p className="text-[6.5px] lg:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Growth</p>
+                    <p className="text-[10px] lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight mt-0.5 lg:mt-1.5 leading-none truncate">+12.4%</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center transition-all group-hover:bg-blue-600 group-hover:text-white border border-blue-100 dark:border-blue-500/20">
-                    <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="space-y-1 lg:space-y-3">
+                  <div className="w-5 h-5 lg:w-11 lg:h-11 rounded-md lg:rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center transition-all border border-blue-100 dark:border-blue-500/20">
+                    <Target className="w-2.5 h-2.5 lg:w-6 lg:h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Accuracy</p>
-                    <p className="text-lg font-black text-slate-800 dark:text-white tracking-tight">98.2%</p>
+                    <p className="text-[6.5px] lg:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Accuracy</p>
+                    <p className="text-[10px] lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight mt-0.5 lg:mt-1.5 leading-none truncate">98.2%</p>
                   </div>
                 </div>
               </div>
-              <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
-                  <Navigation className="w-3 h-3" />
-                  {dailyRecord?.location?.checkIn ? `${dailyRecord.location.checkIn.lat.toFixed(2)}, ${dailyRecord.location.checkIn.lng.toFixed(2)}` : 'Geofence Active'}
+              <div className="mt-2.5 lg:mt-8 pt-2 lg:pt-4 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between">
+                <div className="flex items-center gap-1 text-[6.5px] lg:text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest leading-none">
+                  <Navigation className="w-2.5 h-2.5 lg:w-4 lg:h-4" />
+                  {dailyRecord?.location?.checkIn ? `${dailyRecord.location.checkIn.lat.toFixed(4)}, ${dailyRecord.location.checkIn.lng.toFixed(4)}` : 'Enterprise Geofence Active'}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Productivity Chart Section */}
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-50 dark:bg-blue-500/10 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/20">
-                  <TrendingUp className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-2.5 lg:p-8 rounded-md lg:rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-sm lg:shadow-xl lg:shadow-slate-200/5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 lg:mb-10">
+              <div className="flex items-center gap-2 lg:gap-4">
+                <div className="w-5 h-5 lg:w-12 lg:h-12 bg-blue-50 dark:bg-blue-500/10 rounded-sm lg:rounded-xl flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/20">
+                  <TrendingUp className="w-2.5 h-2.5 lg:w-6 lg:h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase">Productivity Registry</h3>
-                  <p className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Operational Flow</p>
+                  <h3 className="text-[9px] lg:text-xl font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase">Flow Registry</h3>
+                  <p className="text-[6.5px] lg:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Personnel Output Metrics</p>
                 </div>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-sm lg:rounded-xl border border-slate-200/50 dark:border-slate-800/50">
                 <button
                   onClick={() => setRegistryView('cycle')}
-                  className={`flex-1 sm:flex-none px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-colors ${registryView === 'cycle' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  className={`flex-1 sm:flex-none px-3 lg:px-6 py-1 lg:py-2 rounded-sm lg:rounded-lg text-[6.5px] lg:text-[10px] font-bold uppercase tracking-widest transition-all ${registryView === 'cycle' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   Cycle
                 </button>
                 <button
                   onClick={() => setRegistryView('phase')}
-                  className={`flex-1 sm:flex-none px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-colors ${registryView === 'phase' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  className={`flex-1 sm:flex-none px-3 lg:px-6 py-1 lg:py-2 rounded-sm lg:rounded-lg text-[6.5px] lg:text-[10px] font-bold uppercase tracking-widest transition-all ${registryView === 'phase' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   Phase
                 </button>
               </div>
             </div>
-            <div className="h-44 w-full">
+            <div className="h-24 lg:h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={registryView === 'cycle' ? weeklyData : phaseData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9'} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} />
-                  <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase' }} />
-                  <Bar dataKey="hours" radius={[4, 4, 4, 4]} barSize={registryView === 'cycle' ? 16 : 32}>
-                    {(registryView === 'cycle' ? weeklyData : phaseData).map((entry, index) => <Cell key={`cell-${index}`} fill={entry.hours > 0 ? '#3b82f6' : (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9')} />)}
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 6, fill: '#94a3b8', fontWeight: 900 }} />
+                  <YAxis hide />
+                  <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff', borderRadius: '4px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '6px', fontWeight: '900', textTransform: 'uppercase' }} />
+                  <Bar dataKey="hours" radius={[1, 1, 0, 0]} barSize={registryView === 'cycle' ? 8 : 16}>
+                    {(registryView === 'cycle' ? weeklyData : phaseData).map((entry, index) => <Cell key={`cell-${index}`} fill={entry.hours > 0 ? '#6366f1' : (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9')} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -452,77 +450,79 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
         {/* Right Column (4 units) */}
         <div className="lg:col-span-4 space-y-4 md:space-y-6">
           {/* Quick Pulse */}
-          <div className="bg-slate-900 dark:bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl dark:shadow-2xl text-white relative overflow-hidden group">
-            <Target className="absolute -top-10 -right-10 w-32 h-32 opacity-10 group-hover:scale-125 transition-all duration-700" />
-            <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">Velocity</h3>
-            <div className="space-y-3 max-h-[180px] overflow-y-auto custom-scrollbar pr-1">
+          <div className="bg-slate-900 border border-slate-800 p-3 lg:p-6 rounded-xl shadow-xl text-white relative overflow-hidden group">
+            <Target className="absolute -top-10 -right-10 w-20 h-20 lg:w-32 lg:h-32 opacity-10 group-hover:scale-125 transition-all duration-700" />
+            <h3 className="text-[7px] lg:text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-3">Velocity</h3>
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 max-h-[160px] overflow-y-auto custom-scrollbar lg:pr-1">
               {activeProjects.length > 0 ? activeProjects.map((project) => (
-                <div key={project.id || project._id} className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
-                  <span className="text-[11px] font-black truncate max-w-[120px]">{project.name}</span>
-                  <span className="text-[10px] font-black bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{project.progress}%</span>
+                <div key={project.id || project._id} className="bg-white/5 backdrop-blur-xl p-2 rounded-lg border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
+                  <span className="text-[9px] lg:text-[11px] font-black truncate flex-1 pr-2">{project.name}</span>
+                  <span className="text-[8px] font-black bg-indigo-500/20 text-indigo-300 px-1 py-0.5 rounded leading-none">{project.progress}%</span>
                 </div>
               )) : (
-                <div className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
-                  <span className="text-[11px] font-black text-slate-500">No Active Projects</span>
-                  <span className="text-[10px] font-black bg-blue-500/10 text-blue-400/50 px-2 py-0.5 rounded">0%</span>
+                <div className="bg-white/5 backdrop-blur-xl p-2 rounded-lg border border-white/10 flex items-center justify-between col-span-2">
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">No Projects</span>
+                  <span className="text-[8px] font-black bg-indigo-500/10 text-indigo-400/50 px-1.5 py-0.5 rounded">0%</span>
                 </div>
               )}
-              <div className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
-                <span className="text-[11px] font-black">Leaves Taken</span>
-                <span className="text-[10px] font-black bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">{leavesTaken} Days</span>
+              <div className="bg-white/5 backdrop-blur-xl p-2 rounded-lg border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors col-span-2 lg:col-span-1">
+                <span className="text-[9px] lg:text-[11px] font-black">Leaves</span>
+                <span className="text-[8px] font-black bg-emerald-500/20 text-emerald-300 px-1 py-0.5 rounded leading-none">{leavesTaken} Days</span>
               </div>
             </div>
           </div>
 
-          {/* Meetings List */}
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-xl dark:shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Agenda</h3>
-              <button onClick={() => onNavigate('Meetings')} className="text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">All <ChevronRight className="w-3 h-3" /></button>
-            </div>
-            <div className="space-y-3">
-              {meetings.length > 0 ? meetings.slice(0, 2).map((m) => (
-                <div key={m.id} className="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition-all group cursor-pointer border border-transparent hover:border-slate-100 dark:hover:border-slate-700/50">
-                  <div className="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 rounded-xl flex flex-col items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    <span className="text-[7px] font-bold text-blue-500 dark:text-blue-300 group-hover:text-blue-100 uppercase">{new Date(m.date).toLocaleString('default', { month: 'short' })}</span>
-                    <span className="text-sm font-black text-blue-600 dark:text-white group-hover:text-white leading-none">{new Date(m.date).getDate()}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-black text-slate-700 dark:text-slate-200 truncate tracking-tight">{m.title}</p>
-                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase">{m.time}</p>
-                  </div>
-                </div>
-              )) : (
-                <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 font-bold py-4">No upcoming meetings</p>
-              )}
-            </div>
-          </div>
-
-          {/* Holidays List */}
-          <div className="bg-white dark:bg-slate-900/40 backdrop-blur-xl p-6 rounded-2xl border border-slate-100 dark:border-slate-800/50 shadow-xl dark:shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Holidays</h3>
-              <button onClick={() => onNavigate('Holidays')} className="text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">List <ChevronRight className="w-3 h-3" /></button>
-            </div>
-            <div className="space-y-3">
-              {holidays
-                .filter(h => h.date && new Date(h.date) >= new Date())
-                .slice(0, 2)
-                .map((h) => (
-                  <div key={h.id} className="flex items-center gap-3 p-2.5 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group border border-transparent hover:border-emerald-100 dark:hover:border-emerald-500/20">
-                    <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-xl flex flex-col items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                      <span className="text-[7px] font-bold uppercase">{new Date(h.date).toLocaleString('default', { month: 'short' })}</span>
-                      <span className="text-sm font-black leading-none">{new Date(h.date).getDate()}</span>
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 lg:gap-6">
+            {/* Meetings List */}
+            <div className="col-span-2 lg:col-span-1 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-3 lg:p-6 rounded-xl border border-slate-100 dark:border-slate-800/50 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[7px] lg:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Agenda</h3>
+                <button onClick={() => onNavigate('Meetings')} className="text-indigo-600 dark:text-indigo-400 text-[8px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-indigo-700 transition-colors">All <ChevronRight className="w-2 h-2" /></button>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                {meetings.length > 0 ? meetings.slice(0, 2).map((m) => (
+                  <div key={m.id} className="flex items-center gap-2 p-1.5 lg:p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg transition-all group cursor-pointer border border-transparent hover:border-slate-100 dark:hover:border-slate-700/50 min-w-0">
+                    <div className="w-7 h-7 lg:w-10 lg:h-10 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 rounded-lg flex flex-col items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                      <span className="text-[5px] font-bold text-indigo-500 dark:text-indigo-300 group-hover:text-indigo-100 uppercase leading-none">{new Date(m.date).toLocaleString('default', { month: 'short' })}</span>
+                      <span className="text-[10px] lg:text-sm font-black text-indigo-600 dark:white group-hover:text-white leading-none mt-0.5">{new Date(m.date).getDate()}</span>
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-black text-slate-700 dark:text-white truncate tracking-tight">{h.name}</p>
-                      <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest">{h.type}</p>
+                      <p className="text-[9px] lg:text-[11px] font-black text-slate-700 dark:text-slate-200 truncate tracking-tight">{m.title}</p>
+                      <p className="text-[7px] text-slate-400 dark:text-slate-500 font-bold uppercase leading-none mt-0.5">{m.time}</p>
                     </div>
                   </div>
-                ))}
-              {holidays.filter(h => h.date && new Date(h.date) >= new Date()).length === 0 && (
-                <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 font-bold py-4">No upcoming holidays</p>
-              )}
+                )) : (
+                  <p className="text-[8px] text-center text-slate-400 dark:text-slate-500 font-bold py-3 col-span-2">None Found</p>
+                )}
+              </div>
+            </div>
+
+            {/* Holidays List */}
+            <div className="col-span-2 lg:col-span-1 bg-white dark:bg-slate-900/40 backdrop-blur-xl p-3 lg:p-6 rounded-xl border border-slate-100 dark:border-slate-800/50 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[7px] lg:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Holidays</h3>
+                <button onClick={() => onNavigate('Holidays')} className="text-indigo-600 dark:text-indigo-400 text-[8px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:text-indigo-700 transition-colors">List <ChevronRight className="w-2" /></button>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                {holidays
+                  .filter(h => h.date && new Date(h.date) >= new Date())
+                  .slice(0, 2)
+                  .map((h) => (
+                    <div key={h.id} className="flex items-center gap-2 p-1.5 lg:p-2.5 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition-all group border border-transparent hover:border-emerald-100 dark:hover:border-emerald-700/50 min-w-0">
+                      <div className="w-7 h-7 lg:w-10 lg:h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-lg flex flex-col items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <span className="text-[5px] font-bold uppercase leading-none text-emerald-500">{new Date(h.date).toLocaleString('default', { month: 'short' })}</span>
+                        <span className="text-[10px] lg:text-sm font-black leading-none mt-0.5 text-emerald-600">{new Date(h.date).getDate()}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[9px] lg:text-[11px] font-black text-slate-700 dark:text-white truncate tracking-tight">{h.name}</p>
+                        <p className="text-[7px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest leading-none mt-0.5">{h.type}</p>
+                      </div>
+                    </div>
+                  ))}
+                {holidays.filter(h => h.date && new Date(h.date) >= new Date()).length === 0 && (
+                  <p className="text-[8px] text-center text-slate-400 dark:text-slate-500 font-bold py-3 col-span-2">None Found</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
