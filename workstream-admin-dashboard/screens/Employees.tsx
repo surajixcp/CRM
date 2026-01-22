@@ -27,6 +27,7 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
         if (s === 'active') return 'Active';
         if (s === 'on_leave') return 'On Leave';
         if (s === 'terminated') return 'Terminated';
+        if (s === 'blocked') return 'Blocked';
         return s.charAt(0).toUpperCase() + s.slice(1);
       };
 
@@ -163,7 +164,7 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
       role: finalRole,
       salary: Number(formData.salary),
       salaryType: formData.salaryType || 'monthly', // Added salaryType to payload
-      status: formData.status?.toLowerCase() || 'active',
+      status: formData.status || 'Active',
       phone: formData.phone,
       location: formData.location,
       workMode: formData.workMode,
@@ -185,6 +186,23 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
     }
 
     resetForm();
+  };
+
+  const handleStatusToggle = async (emp: Employee) => {
+    const newStatus: 'Active' | 'Blocked' = emp.status === 'Blocked' ? 'Active' : 'Blocked' as any;
+    const confirmMsg = emp.status === 'Blocked'
+      ? `Are you sure you want to restore access for ${emp.name}?`
+      : `Are you sure you want to BLOCK ${emp.name}? They will lose all access immediately.`;
+
+    if (window.confirm(confirmMsg)) {
+      try {
+        await employeeService.updateEmployee(emp.id, { status: newStatus });
+        fetchEmployees();
+      } catch (err) {
+        console.error('Failed to toggle status', err);
+        alert('Failed to update employee status');
+      }
+    }
   };
 
   const confirmDelete = async () => {
@@ -239,7 +257,7 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
             {showFilterDropdown && (
               <div className="absolute top-full mt-2 right-0 w-44 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-2xl z-50 p-1.5 animate-in fade-in zoom-in-95 duration-200">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest p-2 mb-1">Status Filter</p>
-                {['All', 'Active', 'On Leave', 'Terminated'].map(status => (
+                {['All', 'Active', 'On Leave', 'Blocked', 'Terminated'].map(status => (
                   <button
                     key={status}
                     onClick={() => {
@@ -310,14 +328,27 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex flex-col gap-1">
                       <span className={`w-fit px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-md ${emp.status === 'Active' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                        emp.status === 'On Leave' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                        emp.status === 'On Leave' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                          emp.status === 'Blocked' ? 'bg-slate-900 dark:bg-slate-800 text-white' :
+                            'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
                         }`}>
                         {emp.status}
                       </span>
                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter ml-0.5">{emp.workMode}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-right space-x-1">
+                  <td className="px-4 py-3 whitespace-nowrap text-right space-x-1 flex items-center justify-end">
+                    <button
+                      onClick={() => handleStatusToggle(emp)}
+                      className={`p-1.5 rounded-lg transition-all active:scale-90 ${emp.status === 'Blocked' ? 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-400/10' : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-400/10'}`}
+                      title={emp.status === 'Blocked' ? 'Unblock User' : 'Block User'}
+                    >
+                      {emp.status === 'Blocked' ? (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 11V7a4 4 0 118 0m4 4V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                      )}
+                    </button>
                     <button
                       onClick={() => handleViewOverview(emp.id)}
                       className="text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-400/10 p-1.5 rounded-lg transition-all active:scale-90"
@@ -583,6 +614,7 @@ const Employees: React.FC<EmployeesProps> = ({ onNavigate }) => {
                     >
                       <option value="Active">OPERATIONAL</option>
                       <option value="On Leave">STANDBY</option>
+                      <option value="Blocked">RESTRICTED</option>
                       <option value="Terminated">DECOMMISSIONED</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">

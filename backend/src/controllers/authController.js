@@ -19,6 +19,11 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+        if (user.status === 'blocked') {
+            res.status(401).json({ message: 'Your account has been blocked. Please contact admin.' });
+            return;
+        }
+
         if (user.status !== 'active' && user.status !== 'on_leave') {
             res.status(401).json({ message: 'Account is inactive. Please contact admin.' });
             return;
@@ -103,7 +108,7 @@ const createEmployee = async (req, res) => {
             designation,
             salary,
             salaryType: (salaryType === 'annual' || salaryType === 'monthly') ? salaryType : 'monthly',
-            status: (status?.toLowerCase() === 'active' || status?.toLowerCase() === 'on_leave' || status?.toLowerCase() === 'terminated' || status?.toLowerCase() === 'inactive') ? status.toLowerCase() : 'active',
+            status: (status?.toLowerCase() === 'active' || status?.toLowerCase() === 'on_leave' || status?.toLowerCase() === 'terminated' || status?.toLowerCase() === 'inactive' || status?.toLowerCase() === 'blocked') ? status.toLowerCase() : 'active',
             phone,
             location,
             workMode: (workMode === 'WFH' || workMode === 'WFO') ? workMode : 'WFO',

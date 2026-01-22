@@ -45,6 +45,8 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [user, setUser] = useState<any>(null);
   const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  const [phaseData, setPhaseData] = useState<any[]>([]);
+  const [registryView, setRegistryView] = useState<'cycle' | 'phase'>('cycle');
   const [companySettings, setCompanySettings] = useState<any>(null);
 
   const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -146,6 +148,54 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
       setWeeklyData(chartData);
 
+      // Phase Data (Weekly aggregation for the month)
+      const phaseWeeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+      const phaseChartData = phaseWeeks.map(name => ({ name, hours: 0 }));
+
+      if (Array.isArray(logs)) {
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+
+        logs.forEach((log: any) => {
+          const logDate = new Date(log.date);
+
+          // Only aggregate for current month/year
+          if (logDate.getMonth() === currentMonth && logDate.getFullYear() === currentYear) {
+            const dayOfMonth = logDate.getDate();
+            const weekIndex = Math.floor((dayOfMonth - 1) / 7);
+            const hours = parseFloat(log.workingHours || '0');
+            if (phaseChartData[weekIndex]) {
+              phaseChartData[weekIndex].hours += hours;
+            }
+          }
+        });
+      }
+      setPhaseData(phaseChartData);
+
+      // Refine Cycle Data (Strictly current week)
+      if (Array.isArray(logs)) {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0-6
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - dayOfWeek);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        const refinedCycleData = days.map(day => ({ name: day, hours: 0 }));
+        logs.forEach((log: any) => {
+          const logDate = new Date(log.date);
+          if (logDate >= startOfWeek && logDate <= endOfWeek) {
+            const di = logDate.getDay();
+            refinedCycleData[di].hours += parseFloat(log.workingHours || '0');
+          }
+        });
+        setWeeklyData(refinedCycleData);
+      }
+
       const myMeetings = await meetingService.getMyMeetings();
       setMeetings(Array.isArray(myMeetings) ? myMeetings.map((m: any) => ({ ...m, id: m._id })) : []);
 
@@ -206,8 +256,10 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
   };
 
   // Derived stats
-  const activeProjects = projects.filter(p => p.status === 'Active');
-  const firstProject = activeProjects[0];
+  const activeProjects = projects.filter(p => {
+    const status = (typeof p.status === 'string' ? p.status : '').toLowerCase();
+    return status !== 'completed' && status !== '';
+  });
   const leavesTaken = leaves.filter(l => l.status === 'Approved').length;
 
   return (
@@ -367,19 +419,29 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
               </div>
               <div className="flex gap-1">
-                <button className="flex-1 sm:flex-none px-3 py-1 bg-blue-600 text-white rounded-lg text-[8px] font-black uppercase tracking-widest shadow-sm">Cycle</button>
-                <button className="flex-1 sm:flex-none px-3 py-1 text-slate-400 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Phase</button>
+                <button
+                  onClick={() => setRegistryView('cycle')}
+                  className={`flex-1 sm:flex-none px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-colors ${registryView === 'cycle' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                >
+                  Cycle
+                </button>
+                <button
+                  onClick={() => setRegistryView('phase')}
+                  className={`flex-1 sm:flex-none px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-colors ${registryView === 'phase' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                >
+                  Phase
+                </button>
               </div>
             </div>
             <div className="h-44 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weeklyData}>
+                <BarChart data={registryView === 'cycle' ? weeklyData : phaseData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9'} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: '#94a3b8', fontWeight: 900 }} />
                   <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase' }} />
-                  <Bar dataKey="hours" radius={[4, 4, 4, 4]} barSize={16}>
-                    {weeklyData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.hours > 0 ? '#3b82f6' : (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9')} />)}
+                  <Bar dataKey="hours" radius={[4, 4, 4, 4]} barSize={registryView === 'cycle' ? 16 : 32}>
+                    {(registryView === 'cycle' ? weeklyData : phaseData).map((entry, index) => <Cell key={`cell-${index}`} fill={entry.hours > 0 ? '#3b82f6' : (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9')} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -393,11 +455,18 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
           <div className="bg-slate-900 dark:bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl dark:shadow-2xl text-white relative overflow-hidden group">
             <Target className="absolute -top-10 -right-10 w-32 h-32 opacity-10 group-hover:scale-125 transition-all duration-700" />
             <h3 className="text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] mb-4">Velocity</h3>
-            <div className="space-y-3">
-              <div className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
-                <span className="text-[11px] font-black">{firstProject ? firstProject.name : 'No Active Projects'}</span>
-                <span className="text-[10px] font-black bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{firstProject ? firstProject.progress : 0}%</span>
-              </div>
+            <div className="space-y-3 max-h-[180px] overflow-y-auto custom-scrollbar pr-1">
+              {activeProjects.length > 0 ? activeProjects.map((project) => (
+                <div key={project.id || project._id} className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
+                  <span className="text-[11px] font-black truncate max-w-[120px]">{project.name}</span>
+                  <span className="text-[10px] font-black bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{project.progress}%</span>
+                </div>
+              )) : (
+                <div className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
+                  <span className="text-[11px] font-black text-slate-500">No Active Projects</span>
+                  <span className="text-[10px] font-black bg-blue-500/10 text-blue-400/50 px-2 py-0.5 rounded">0%</span>
+                </div>
+              )}
               <div className="bg-white/5 backdrop-blur-xl p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/10 transition-colors">
                 <span className="text-[11px] font-black">Leaves Taken</span>
                 <span className="text-[10px] font-black bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">{leavesTaken} Days</span>

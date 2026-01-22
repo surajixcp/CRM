@@ -19,7 +19,7 @@ export interface Employee {
   phone?: string;
   password?: string;
   role: string;
-  status: 'Active' | 'On Leave' | 'Terminated';
+  status: 'Active' | 'On Leave' | 'Terminated' | 'Blocked';
   designation: string;
   salary: number;
   image: string;

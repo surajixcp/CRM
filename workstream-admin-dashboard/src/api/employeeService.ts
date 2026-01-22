@@ -83,7 +83,8 @@ export const employeeService = {
         const statusMap: { [key: string]: string } = {
             'Active': 'active',
             'On Leave': 'on_leave',
-            'Terminated': 'terminated'
+            'Terminated': 'terminated',
+            'Blocked': 'blocked'
         };
 
         const payload = {
@@ -101,7 +102,8 @@ export const employeeService = {
         const statusMap: { [key: string]: string } = {
             'Active': 'active',
             'On Leave': 'on_leave',
-            'Terminated': 'terminated'
+            'Terminated': 'terminated',
+            'Blocked': 'blocked'
         };
 
         const payload = {

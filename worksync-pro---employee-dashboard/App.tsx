@@ -80,13 +80,15 @@ const App: React.FC = () => {
       });
     }
 
-    // Fetch Global Settings
-    settingService.getSettings().then(data => {
-      setCompanySettings({
-        name: data.companyName || 'WorkSync',
-        logo: data.companyLogo || ''
-      });
-    }).catch(err => console.error("Setting fetch error", err));
+    // Fetch Global Settings if token exists
+    if (token) {
+      settingService.getSettings().then(data => {
+        setCompanySettings({
+          name: data.companyName || 'WorkSync',
+          logo: data.companyLogo || ''
+        });
+      }).catch(err => console.error("Setting fetch error", err));
+    }
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);

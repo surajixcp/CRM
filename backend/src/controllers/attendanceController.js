@@ -544,17 +544,17 @@ const getMonthlyAttendance = async (req, res) => {
 const getAttendanceSummary = async (req, res) => {
     try {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const todayStr = today.toISOString().split('T')[0];
+        const startOfToday = new Date(todayStr + 'T00:00:00');
+        const endOfToday = new Date(todayStr + 'T23:59:59');
 
-        console.log('Fetching Attendance Summary for:', today);
+        console.log('Fetching Attendance Summary for:', startOfToday, 'to', endOfToday);
 
         const totalEmployees = await User.countDocuments({ role: 'employee', status: 'active' });
 
         // 1. Get all attendance logs for today
         const attendanceLogs = await Attendance.find({
-            date: { $gte: today, $lt: tomorrow }
+            date: { $gte: startOfToday, $lte: endOfToday }
         }).select('user status');
 
         // 2. Get all approved leaves for today
@@ -623,14 +623,15 @@ const getAllAttendance = async (req, res) => {
 
     // Date Filter
     if (startDate && endDate) {
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+        // Force local date parsing with T00:00:00
+        const start = new Date(startDate + 'T00:00:00');
+        const end = new Date(endDate + 'T23:59:59');
         query.date = {
-            $gte: new Date(startDate),
+            $gte: start,
             $lte: end
         };
     } else if (startDate) {
-        query.date = { $gte: new Date(startDate) };
+        query.date = { $gte: new Date(startDate + 'T00:00:00') };
     }
 
     // Status Filter
@@ -646,7 +647,7 @@ const getAllAttendance = async (req, res) => {
     // If it's a single day view (e.g., today), include all active employees
     if (startDate && (startDate === endDate || !endDate)) {
         // Normalize todayDate for robust comparison
-        const todayDate = new Date(startDate);
+        const todayDate = new Date(startDate + 'T00:00:00');
         todayDate.setHours(0, 0, 0, 0);
 
         // Fetch all employees joined on or before todayDate

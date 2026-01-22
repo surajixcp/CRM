@@ -40,5 +40,10 @@ export const settingService = {
     updateSettings: async (data: Partial<CompanySettings>): Promise<CompanySettings> => {
         const response = await api.put('/settings', data);
         return response.data;
+    },
+
+    deleteCompany: async (password: string) => {
+        const response = await api.delete('/settings', { data: { password } });
+        return response.data;
     }
 };

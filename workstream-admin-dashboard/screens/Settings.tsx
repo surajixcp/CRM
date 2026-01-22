@@ -7,6 +7,9 @@ const Settings: React.FC = () => {
   const [logo, setLogo] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const profileImageInputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [profile, setProfile] = useState({
     name: '',
@@ -126,6 +129,27 @@ const Settings: React.FC = () => {
         : [...prev.weekendPolicy, day];
       return { ...prev, weekendPolicy: newPolicy };
     });
+  };
+  const handleDeleteCompany = async () => {
+    if (!deletePassword) {
+      alert('Please enter your password to confirm deletion');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await settingService.deleteCompany(deletePassword);
+      alert('Company data deleted successfully. You will now be logged out.');
+      authService.logout();
+      window.location.reload();
+    } catch (err: any) {
+      console.error('Failed to delete company', err);
+      alert(err.response?.data?.message || 'Failed to delete company. Please verify your password.');
+    } finally {
+      setIsDeleting(false);
+      setDeletePassword('');
+      setShowDeleteModal(false);
+    }
   };
 
   const inputClasses = "w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-[11px] font-bold text-slate-800 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400";
@@ -452,6 +476,77 @@ const Settings: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Danger Zone */}
+      <div className="bg-rose-50/30 dark:bg-rose-500/5 rounded-xl border border-rose-100 dark:border-rose-500/20 overflow-hidden mt-4">
+        <div className="px-6 py-4 border-b border-rose-100 dark:border-rose-500/20 bg-rose-50/50 dark:bg-rose-950/20">
+          <h3 className="text-sm font-black text-rose-600 dark:text-rose-400 uppercase tracking-tight">Danger Zone</h3>
+          <p className="text-[10px] text-rose-500/70 font-bold uppercase tracking-widest leading-none mt-1">Irreversible destructive actions</p>
+        </div>
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-[11px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-tight">Delete Whole Company Data</h4>
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">
+                Permanently erase all employees, logs, projects, and configurations. This cannot be undone.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="px-6 py-2.5 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-rose-700 transition-all shadow-lg shadow-rose-500/10 active:scale-95 whitespace-nowrap"
+            >
+              Delete Company
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[1000] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-rose-100 dark:bg-rose-500/10 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              </div>
+              <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase">Critical Confirmation</h3>
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-2 px-4 leading-relaxed">
+                Enter your <span className="text-rose-600 font-black">Admin Password</span> to permanently vanish all system data from everywhere.
+              </p>
+            </div>
+
+            <div className="space-y-1.5 pt-2">
+              <label className={labelClasses}>Admin Password</label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="••••••••"
+                className={inputClasses}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeletePassword(''); }}
+                className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleDeleteCompany}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2.5 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-rose-700 transition-all shadow-lg shadow-rose-500/10 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              >
+                {isDeleting ? (
+                  <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                ) : 'Vanish Data'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

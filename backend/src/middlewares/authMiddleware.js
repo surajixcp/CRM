@@ -18,6 +18,10 @@ const protect = async (req, res, next) => {
                 return res.status(401).json({ message: 'Not authorized, user not found' });
             }
 
+            if (req.user.status === 'blocked') {
+                return res.status(401).json({ message: 'Your account has been blocked. Please contact admin.' });
+            }
+
             next();
         } catch (error) {
             console.error('JWT Verification Error:', error.name, error.message);

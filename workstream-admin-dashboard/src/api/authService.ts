@@ -19,5 +19,9 @@ export const authService = {
     updateProfile: async (data: any) => {
         const response = await api.put('/auth/profile', data);
         return response.data;
+    },
+
+    logout: () => {
+        localStorage.removeItem('userInfo');
     }
 };

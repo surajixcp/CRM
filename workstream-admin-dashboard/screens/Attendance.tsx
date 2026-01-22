@@ -26,7 +26,11 @@ const Attendance: React.FC = () => {
 
   useEffect(() => {
     fetchLogs();
-  }, [startDate, endDate]); // Fetch on date change
+
+    // Live Sync Polling: Refresh every 30 seconds
+    const interval = setInterval(fetchLogs, 30000);
+    return () => clearInterval(interval);
+  }, [startDate, endDate]); // Fetch on date change or interval
 
   const fetchLogs = async () => {
     try {
