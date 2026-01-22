@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Icons } from '../constants';
 import { attendanceService } from '../src/api/attendanceService';
-// import { AttendanceRecord } from '../types'; // Adjust imports if needed
+import { employeeService } from '../src/api/employeeService';
+import { Employee } from '../types';
 
 // Interface for API response might differ slightly or we map it
 interface AttendanceLog {
@@ -23,6 +24,12 @@ const Attendance: React.FC = () => {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [isExporting, setIsExporting] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>('');
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
   useEffect(() => {
     fetchLogs();
@@ -30,11 +37,24 @@ const Attendance: React.FC = () => {
     // Live Sync Polling: Refresh every 30 seconds
     const interval = setInterval(fetchLogs, 30000);
     return () => clearInterval(interval);
-  }, [startDate, endDate]); // Fetch on date change or interval
+  }, [startDate, endDate, selectedUser]); // Fetch on date change or user change
+
+  const fetchEmployees = async () => {
+    try {
+      const data = await employeeService.getAllEmployees();
+      setEmployees(data);
+    } catch (error) {
+      console.error('Failed to fetch employees', error);
+    }
+  };
 
   const fetchLogs = async () => {
     try {
-      const data = await attendanceService.getAllAttendance({ startDate, endDate });
+      const data = await attendanceService.getAllAttendance({
+        startDate,
+        endDate,
+        userId: selectedUser || undefined
+      });
       setLogs(data);
     } catch (error) {
       console.error('Failed to fetch attendance logs', error);
@@ -44,11 +64,18 @@ const Attendance: React.FC = () => {
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const blob = await attendanceService.exportAttendance({ startDate, endDate });
+      const blob = await attendanceService.exportAttendance({
+        startDate,
+        endDate,
+        userId: selectedUser || undefined
+      });
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Attendance_Register_${startDate}_to_${endDate}.xlsx`);
+      const fileName = selectedUser
+        ? `Attendance_${employees.find(e => e.id === selectedUser)?.name}_${startDate}_to_${endDate}.xlsx`
+        : `Attendance_Register_${startDate}_to_${endDate}.xlsx`;
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -81,6 +108,21 @@ const Attendance: React.FC = () => {
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
+            </div>
+            <div className="w-px h-3 bg-slate-100 dark:bg-slate-800"></div>
+            <div className="flex items-center px-1">
+              <select
+                className="bg-transparent text-[10px] font-black text-slate-600 dark:text-slate-300 outline-none cursor-pointer uppercase tracking-tight max-w-[120px]"
+                value={selectedUser}
+                onChange={(e) => setSelectedUser(e.target.value)}
+              >
+                <option value="" className="bg-white dark:bg-slate-900">All Employees</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id} className="bg-white dark:bg-slate-900">
+                    {emp.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               onClick={fetchLogs}

@@ -617,9 +617,12 @@ const getAttendanceSummary = async (req, res) => {
 // @route   GET /attendance/logs
 // @access  Private (Admin/Sub-Admin)
 const getAllAttendance = async (req, res) => {
-    const { startDate, endDate, status } = req.query;
+    const { startDate, endDate, status, userId } = req.query;
 
     let query = {};
+    if (userId) {
+        query.user = userId;
+    }
 
     // Date Filter
     if (startDate && endDate) {
@@ -653,7 +656,8 @@ const getAllAttendance = async (req, res) => {
         // Fetch all employees joined on or before todayDate
         const activeUsers = await User.find({
             role: 'employee',
-            status: 'active'
+            status: 'active',
+            ...(userId ? { _id: userId } : {})
         }).select('name email designation joiningDate');
 
         // Filter out those who haven't joined yet
@@ -743,25 +747,26 @@ const getAllAttendance = async (req, res) => {
 
 const exportAttendanceToExcel = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, userId } = req.query;
 
         if (!startDate || !endDate) {
             return res.status(400).json({ message: 'Please provide startDate and endDate' });
         }
 
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+        const start = new Date(startDate + 'T00:00:00');
+        const end = new Date(endDate + 'T23:59:59');
 
         // Fetch all active employees
         const employees = await User.find({
             role: 'employee',
-            status: 'active'
+            status: 'active',
+            ...(userId ? { _id: userId } : {})
         }).select('name email designation joiningDate').sort({ name: 1 });
 
         // Fetch attendance logs for the period
         const logs = await Attendance.find({
-            date: { $gte: start, $lte: end }
+            date: { $gte: start, $lte: end },
+            ...(userId ? { user: userId } : {})
         }).populate('user', 'name');
 
         // Fetch holidays
@@ -792,51 +797,64 @@ const exportAttendanceToExcel = async (req, res) => {
         }
 
         // Prepare Header
-        const header = ['Employee Name', 'Email', 'Designation', ...dates.map(d => d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' }))];
+        const header = ['Date', 'Employee Name', 'Email', 'Designation', 'Check-In', 'Check-Out', 'Utilization (Hrs)', 'Status'];
 
         // Prepare Data Rows
-        const dataRows = employees.map(emp => {
-            const row = [emp.name, emp.email, emp.designation];
+        const dataRows = [];
 
-            dates.forEach(date => {
-                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const dayName = dayNames[date.getDay()];
+        dates.forEach(date => {
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = dayNames[date.getDay()];
+            const dateStr = date.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 
-                // 1. Check Holiday first
+            employees.forEach(emp => {
+                let checkIn = '--:--';
+                let checkOut = '--:--';
+                let utilization = '0';
+                let status = 'Absent';
+
+                // 1. Check Holiday
                 const holiday = holidayList.find(h => new Date(h.date).toDateString() === date.toDateString());
                 if (holiday) {
-                    row.push('H'); // Holiday
-                    return;
+                    status = `Holiday (${holiday.name})`;
+                } else if (weekendPolicy.includes(dayName)) {
+                    // 2. Check Weekend
+                    status = 'Weekend';
+                } else {
+                    // 3. Check Attendance Log
+                    const log = logs.find(l => {
+                        if (!l.user) return false;
+                        const logUserId = l.user._id ? l.user._id.toString() : l.user.toString();
+                        const targetUserId = emp._id ? emp._id.toString() : emp.toString();
+
+                        const logDate = new Date(l.date);
+                        return logUserId === targetUserId && logDate.toDateString() === date.toDateString();
+                    });
+                    if (log) {
+                        checkIn = log.checkIn ? new Date(log.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--';
+                        checkOut = log.checkOut ? new Date(log.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--';
+                        utilization = log.workingHours || '0';
+                        status = log.status.charAt(0).toUpperCase() + log.status.slice(1).replace('_', ' ');
+                    } else {
+                        // 4. Check Leave
+                        const leave = leaves.find(lv => lv.user.toString() === emp._id.toString() && new Date(lv.startDate) <= date && new Date(lv.endDate) >= date);
+                        if (leave) {
+                            status = `Leave (${leave.leaveType || 'General'})`;
+                        }
+                    }
                 }
 
-                // 2. Check Weekend
-                if (weekendPolicy.includes(dayName)) {
-                    row.push('W'); // Weekend
-                    return;
-                }
-
-                // 3. Check Attendance Log
-                const log = logs.find(l => l.user && l.user._id.toString() === emp._id.toString() && new Date(l.date).toDateString() === date.toDateString());
-                if (log) {
-                    if (log.status === 'present') row.push('P');
-                    else if (log.status === 'late') row.push('L');
-                    else if (log.status === 'half_day' || log.workingHours < 4) row.push('HD');
-                    else row.push(log.status.charAt(0).toUpperCase());
-                    return;
-                }
-
-                // 4. Check Leave
-                const leave = leaves.find(lv => lv.user.toString() === emp._id.toString() && new Date(lv.startDate) <= date && new Date(lv.endDate) >= date);
-                if (leave) {
-                    row.push('LV'); // Leave
-                    return;
-                }
-
-                // 5. Default to Absent
-                row.push('A');
+                dataRows.push([
+                    dateStr,
+                    emp.name,
+                    emp.email,
+                    emp.designation || '--',
+                    checkIn,
+                    checkOut,
+                    utilization,
+                    status
+                ]);
             });
-
-            return row;
         });
 
         // Create Workbook
@@ -844,10 +862,17 @@ const exportAttendanceToExcel = async (req, res) => {
         const ws = XLSX.utils.aoa_to_sheet([header, ...dataRows]);
 
         // Auto-width for columns
-        const colWidths = header.map(h => ({ wch: h.length + 5 }));
+        const colWidths = header.map((h, i) => {
+            let maxLen = h.length;
+            dataRows.forEach(row => {
+                const cellVal = String(row[i] || '');
+                if (cellVal.length > maxLen) maxLen = cellVal.length;
+            });
+            return { wch: maxLen + 2 };
+        });
         ws['!cols'] = colWidths;
 
-        XLSX.utils.book_append_sheet(wb, ws, 'Attendance_Register');
+        XLSX.utils.book_append_sheet(wb, ws, 'Attendance_Details');
 
         const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
 

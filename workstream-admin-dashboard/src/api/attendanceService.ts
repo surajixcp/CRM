@@ -2,7 +2,7 @@ import api from './api';
 import { AttendanceRecord } from '../../types';
 
 export const attendanceService = {
-    getAllAttendance: async (params?: { startDate?: string; endDate?: string; status?: string }) => {
+    getAllAttendance: async (params?: { startDate?: string; endDate?: string; status?: string; userId?: string }) => {
         const response = await api.get('/attendance/logs', { params });
         return response.data;
     },
@@ -34,7 +34,7 @@ export const attendanceService = {
         return response.data;
     },
 
-    exportAttendance: async (params: { startDate: string; endDate: string }) => {
+    exportAttendance: async (params: { startDate: string; endDate: string; userId?: string }) => {
         const response = await api.get('/attendance/export', {
             params,
             responseType: 'blob'
