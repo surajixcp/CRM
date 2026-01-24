@@ -36,6 +36,11 @@ app.use('/holidays', holidayRoutes);
 app.use('/salaries', salaryRoutes);
 app.use('/settings', settingRoutes);
 
+// Health Check
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'API is running...' });
+});
+
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
