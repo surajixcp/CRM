@@ -129,7 +129,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   return (
     <div className="space-y-5">
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         {[
           { label: 'Total Workforce', value: stats.totalEmployees, sub: 'Active', color: 'from-blue-600 to-indigo-700', icon: <Icons.Employees className="w-4 h-4" /> },
           { label: 'Present Today', value: stats.present, sub: `${activePercentage}% Rate`, color: 'from-emerald-500 to-teal-600', icon: <Icons.Check className="w-4 h-4" /> },
@@ -180,7 +180,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="h-[200px] md:h-[260px] w-full">
+          <div className="h-[200px] sm:h-[220px] md:h-[260px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={attendanceChartData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="currentColor" className="text-slate-100 dark:text-slate-800/50" />

@@ -157,7 +157,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#020617] flex text-slate-900 dark:text-slate-100 transition-colors duration-300 font-inter">
+    <div className="min-h-screen bg-white dark:bg-[#020617] flex text-slate-900 dark:text-slate-100 transition-colors duration-300 font-inter overflow-x-hidden">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div

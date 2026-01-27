@@ -47,7 +47,7 @@ const LoginScreen: React.FC<LoginProps> = ({ onLogin }) => {
 
       <div className="w-full max-w-[340px] bg-[#0f172a]/30 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden relative animate-in zoom-in-95 duration-1000 border border-white/[0.05] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] ring-1 ring-white/5">
         {/* Header Section */}
-        <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white/[0.02] to-transparent">
+        <div className="px-6 md:px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white/[0.02] to-transparent">
           <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl relative group overflow-hidden active:scale-95 transition-transform">
             <span className="text-2xl font-black text-white relative z-10 italic">W</span>
             <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
@@ -56,7 +56,7 @@ const LoginScreen: React.FC<LoginProps> = ({ onLogin }) => {
           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-80">Management Portal</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-8 pb-10 space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 md:px-8 pb-10 space-y-4">
           {/* Identity Field */}
           <div className="space-y-1.5">
             <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Identity</label>

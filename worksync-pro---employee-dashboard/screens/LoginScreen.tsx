@@ -65,7 +65,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="px-8 pb-10 space-y-4">
+          <form onSubmit={handleSubmit} className="px-6 md:px-8 pb-10 space-y-4">
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Identity</label>

@@ -113,7 +113,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen overflow-visible text-slate-900 dark:text-slate-100 bg-white dark:bg-[#020617] transition-colors duration-300 selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="flex min-h-screen overflow-x-hidden text-slate-900 dark:text-slate-100 bg-white dark:bg-[#020617] transition-colors duration-300 selection:bg-blue-500/30 selection:text-blue-200">
       {/* Mobile Backdrop Overlay */}
       {isSidebarOpen && (
         <div

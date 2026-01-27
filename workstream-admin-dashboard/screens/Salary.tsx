@@ -232,7 +232,7 @@ const Salary: React.FC = () => {
                   <Edit2 className="w-3 h-3" />
                 </button>
                 {item.status === 'Unpaid' ? (
-                  <button onClick={() => handlePay(item.id)} className="flex-[2] py-1.5 bg-blue-600 text-white rounded-lg text-[8px] font-black uppercase tracking-widest">Pay</button>
+                  <button onClick={() => handlePay(item.id)} className="flex-[2] py-1.5 bg-blue-600 text-white rounded-lg text-[8px] font-black uppercase tracking-widest active:scale-95 transition-transform">Pay</button>
                 ) : (
                   <button className="flex-[2] py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-lg text-[8px] font-black uppercase tracking-widest">Rec</button>
                 )}
