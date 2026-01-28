@@ -3,16 +3,16 @@ const dotenv = require('dotenv');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-dotenv.config({ path: '../../.env' }); // Adjust path as this is in src/utils
+dotenv.config({ path: require('path').resolve(__dirname, '../../.env') });
 
 const seedAdmin = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/attendance_crm');
         console.log(`MongoDB Connected: ${conn.connection.host}`);
 
-        const email = 'surajgiri2002x@gmail.com';
-        const password = 'suraj123';
-        const name = 'Suraj Giri'; // Assuming name based on email
+        const email = 'boldvibetech@gmail.com';
+        const password = 'dinesh123';
+        const name = 'Dinesh Birla'; // Assuming name based on email
 
         const userExists = await User.findOne({ email });
 
