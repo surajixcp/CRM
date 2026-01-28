@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://crm-1-ssit.onrender.com',
+    baseURL: 'https://crmserver.boldvibetech.com',
     headers: {
         'Content-Type': 'application/json',
     },
