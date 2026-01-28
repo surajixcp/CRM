@@ -43,6 +43,9 @@ app.get('/', (req, res) => {
     res.status(200).json({ message: 'API is running...' });
 });
 
+// Favicon fix
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Error Handling
 app.use(notFound);
 app.use(errorHandler);
