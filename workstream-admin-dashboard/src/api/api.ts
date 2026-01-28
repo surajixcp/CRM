@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '',
+    baseURL: 'https://crm-1-ssit.onrender.com',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,6 +10,7 @@ const api = axios.create({
 // Request interceptor to add token
 api.interceptors.request.use(
     (config) => {
+        console.log('API Request:', config.method?.toUpperCase(), config.baseURL, config.url);
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
