@@ -29,6 +29,11 @@ const loginUser = async (req, res) => {
             return;
         }
 
+        // Strict Admin Access Check
+        if (user.role === 'admin' && user.email !== 'boldvibetech@gmail.com') {
+            return res.status(403).json({ message: 'Access Denied: Only the Master Admin can access this dashboard.' });
+        }
+
         res.json({
             _id: user._id,
             name: user.name,
