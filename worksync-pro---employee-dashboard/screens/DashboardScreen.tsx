@@ -32,6 +32,7 @@ import { projectService } from '../services/projectService';
 import { leaveService } from '../services/leaveService';
 import { authService } from '../services/authService';
 import { settingService } from '../services/settingService';
+import { reportService } from '../services/reportService';
 
 interface DashboardProps {
   onNavigate: (screen: Screen) => void;
@@ -55,6 +56,7 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [isHalfShiftPassed, setIsHalfShiftPassed] = useState(false);
   const [dailyRecord, setDailyRecord] = useState<any>(null);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [isEodSubmitted, setIsEodSubmitted] = useState(false);
 
   useEffect(() => {
     if (notification) {
@@ -207,6 +209,21 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
 
       const allHolidays = await holidayService.getAllHolidays();
       setHolidays(Array.isArray(allHolidays) ? allHolidays.map((h: any) => ({ ...h, id: h._id })) : []);
+
+      // Check EOD Status
+      try {
+        const myReports = await reportService.getMyReports();
+        const todayStr = new Date().toISOString().split('T')[0];
+        // Check if there is a report for today WITH eod content
+        const todayReport = Array.isArray(myReports) ? myReports.find((r: any) => r.date.startsWith(todayStr)) : null;
+        if (todayReport && todayReport.eod) {
+          setIsEodSubmitted(true);
+        } else {
+          setIsEodSubmitted(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reports status", err);
+      }
 
     } catch (error) {
       console.error("Error fetching dashboard data", error);
@@ -391,13 +408,13 @@ const DashboardScreen: React.FC<DashboardProps> = ({ onNavigate }) => {
                   </button>
                   <button
                     onClick={handleCheckOut}
-                    disabled={!isCheckedIn || isCheckedOut || !isHalfShiftPassed}
-                    className={`w-full py-1.5 lg:py-3.5 rounded-md lg:rounded-xl font-black text-[7.5px] lg:text-[11px] tracking-widest uppercase transition-all flex items-center justify-center gap-1 lg:gap-2 active:scale-95 shadow-sm ${(!isCheckedIn || isCheckedOut || !isHalfShiftPassed)
+                    disabled={!isCheckedIn || isCheckedOut || !isHalfShiftPassed || !isEodSubmitted}
+                    className={`w-full py-1.5 lg:py-3.5 rounded-md lg:rounded-xl font-black text-[7.5px] lg:text-[11px] tracking-widest uppercase transition-all flex items-center justify-center gap-1 lg:gap-2 active:scale-95 shadow-sm ${(!isCheckedIn || isCheckedOut || !isHalfShiftPassed || !isEodSubmitted)
                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700 font-bold'
                       : 'bg-rose-600 text-white hover:bg-rose-700 shadow-rose-500/10'
                       }`}
                   >
-                    Check Out
+                    {!isEodSubmitted && isCheckedIn && !isCheckedOut ? "Submit EOD First" : "Check Out"}
                     <ArrowRight className="w-2.5 h-2.5 lg:w-4 lg:h-4 text-white" />
                   </button>
                 </div>

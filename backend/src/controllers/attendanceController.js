@@ -2,7 +2,9 @@ const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
 const Leave = require('../models/Leave');
+const Leave = require('../models/Leave');
 const Holiday = require('../models/Holiday');
+const Report = require('../models/Report');
 
 // Helper to calculate distance in meters (Haversine Formula)
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -116,6 +118,16 @@ const checkOut = async (req, res) => {
 
         if (!attendance) {
             return res.status(400).json({ message: 'Active check-in record not found for today.' });
+        }
+
+        // Check for EOD Report
+        const report = await Report.findOne({
+            user: req.user._id,
+            date: today
+        });
+
+        if (!report || !report.eod) {
+            return res.status(403).json({ message: 'Restricted: EOD Report required before checkout.' });
         }
 
         if (attendance.checkOut) {
