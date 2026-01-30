@@ -13,7 +13,8 @@ const Projects: React.FC = () => {
     fetchEmployees();
 
     // Check role from localStorage
-    const storedUser = localStorage.getItem('user');
+    // Check role from localStorage or sessionStorage
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setIsAdmin(user.role === 'admin');

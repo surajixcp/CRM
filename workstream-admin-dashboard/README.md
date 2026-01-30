@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# WorkStream Admin Dashboard
 
-# Run and deploy your AI Studio app
+ The administrative frontend for the WorkStream CRM, built with React and Vite.
 
-This contains everything you need to run your app locally.
+## Features
+- **Dashboard**: High-level overview of company stats.
+- **Employee Management**: Add, edit, and view employee profiles.
+- **Attendance Monitoring**: View daily attendance and monthly reports.
+- **Leave Management**: Approve or reject leave requests.
+- **Payroll**: Manage salaries and view history.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1u_7Dd3PVE8R7_BXmtd4DaLjLpc6TYHGk
+## Setup & Installation
 
-## Run Locally
+1.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-**Prerequisites:**  Node.js
+2.  **Run Locally**
+    ```bash
+    npm run dev
+    ```
+    The app will start at `http://localhost:5173` (or similar).
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Configuration
+This app expects the backend to be running. Ensure the backend URL is correctly configured in `src/api/api.ts` or via environment variables if applicable.

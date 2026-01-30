@@ -1,20 +1,25 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# WorkSync Pro - Employee Dashboard
 
-# Run and deploy your AI Studio app
+The employee-facing frontend for the WorkStream CRM, designed for mobile and desktop use.
 
-This contains everything you need to run your app locally.
+## Features
+- **Attendance**: Clock in/out with geolocation.
+- **Daily Reports**: Submit Start of Day (SOD) and End of Day (EOD) reports.
+- **Leaves**: Apply for leaves and check status.
+- **Profile**: View personal details and stats.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1cPsmYTJKP8f9QzMVHmuU3liShuKtFWNe
+## Setup & Installation
 
-## Run Locally
+1.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-**Prerequisites:**  Node.js
+2.  **Run Locally**
+    ```bash
+    npm run dev
+    ```
+    The app will start at `http://localhost:5173` (or similar).
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Configuration
+This app expects the backend to be running. Ensure the backend URL is correctly configured in `services/api.ts` or `services/*.ts`.

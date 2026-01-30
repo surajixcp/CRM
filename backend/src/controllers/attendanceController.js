@@ -25,6 +25,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 // @access  Private (Employee)
 const checkIn = async (req, res) => {
     try {
+        if (req.user.role !== 'employee') {
+            return res.status(403).json({ message: 'Access denied. Only employees can check in.' });
+        }
+
         const { location } = req.body;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -97,6 +101,10 @@ const checkIn = async (req, res) => {
 // @access  Private (Employee)
 const checkOut = async (req, res) => {
     try {
+        if (req.user.role !== 'employee') {
+            return res.status(403).json({ message: 'Access denied. Only employees can check out.' });
+        }
+
         const { location } = req.body;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
