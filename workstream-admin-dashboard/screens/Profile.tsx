@@ -163,7 +163,7 @@ const Profile: React.FC = () => {
                     value={profile.currentPassword}
                     onChange={(e) => setProfile({ ...profile, currentPassword: e.target.value })}
                     className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-3 md:px-4 py-2 md:py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[10px] md:text-[11px] font-bold dark:text-slate-100 pr-10"
-                    placeholder="••••••••"
+                    placeholder="Enter current key"
                   />
                   <button
                     type="button"
