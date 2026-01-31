@@ -1,7 +1,7 @@
 const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
-const Leave = require('../models/Leave');
+const LeaveModel = require('../models/Leave');
 const Holiday = require('../models/Holiday');
 const Report = require('../models/Report');
 
@@ -482,7 +482,7 @@ const getMonthlyAttendance = async (req, res) => {
 
                 if (!weekendPolicy.includes(dayName)) {
                     // Check if on approved leave
-                    const leave = await Leave.findOne({
+                    const leave = await LeaveModel.findOne({
                         user: req.params.userId,
                         status: 'approved',
                         startDate: { $lte: currentD },
@@ -520,7 +520,7 @@ const getMonthlyAttendance = async (req, res) => {
 
                 if (!hasToday) {
                     // Determine if it's a weekend or approved leave
-                    const leave = await Leave.findOne({
+                    const leave = await LeaveModel.findOne({
                         user: req.params.userId,
                         status: 'approved',
                         startDate: { $lte: today },
@@ -580,7 +580,7 @@ const getAttendanceSummary = async (req, res) => {
         }).select('user status');
 
         // 2. Get all approved leaves for today
-        const leaves = await Leave.find({
+        const leaves = await LeaveModel.find({
             status: 'approved',
             startDate: { $lte: new Date(today.getTime() + 23 * 59 * 59 * 999) },
             endDate: { $gte: today }
@@ -718,7 +718,7 @@ const getAllAttendance = async (req, res) => {
             const endOfToday = new Date(todayDate);
             endOfToday.setHours(23, 59, 59, 999);
 
-            const leave = await Leave.findOne({
+            const leave = await LeaveModel.findOne({
                 user: u._id,
                 status: 'approved',
                 $or: [
@@ -797,7 +797,7 @@ const exportAttendanceToExcel = async (req, res) => {
         });
 
         // Fetch leaves
-        const leaves = await Leave.find({
+        const leaves = await LeaveModel.find({
             status: 'approved',
             $or: [
                 { startDate: { $lte: end }, endDate: { $gte: start } }
