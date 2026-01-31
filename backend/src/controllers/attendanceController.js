@@ -2,7 +2,6 @@ const Attendance = require('../models/Attendance');
 const User = require('../models/User');
 const Settings = require('../models/Settings');
 const Leave = require('../models/Leave');
-const Leave = require('../models/Leave');
 const Holiday = require('../models/Holiday');
 const Report = require('../models/Report');
 
