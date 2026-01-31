@@ -45,6 +45,8 @@ const App: React.FC = () => {
     if (status) {
       if (remember) {
         localStorage.setItem(AUTH_KEY, 'true');
+      } else {
+        sessionStorage.setItem(AUTH_KEY, 'true');
       }
       setIsAuthenticated(true);
     }
