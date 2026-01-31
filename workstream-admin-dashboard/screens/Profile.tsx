@@ -15,6 +15,8 @@ const Profile: React.FC = () => {
     confirmPassword: ''
   });
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -153,15 +155,26 @@ const Profile: React.FC = () => {
           <div className="space-y-4 pt-2">
             <h3 className="text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 pb-1.5 md:pb-2">Security Infrastructure</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 relative">
                 <label className="text-[8px] md:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">Existing Key</label>
                 <input
-                  type="password"
+                  type={showCurrentPassword ? "text" : "password"}
                   value={profile.currentPassword}
                   onChange={(e) => setProfile({ ...profile, currentPassword: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-3 md:px-4 py-2 md:py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[10px] md:text-[11px] font-bold dark:text-slate-100"
+                  className="w-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 rounded-xl px-3 md:px-4 py-2 md:py-2.5 focus:bg-white dark:focus:bg-slate-900 outline-none transition-all text-[10px] md:text-[11px] font-bold dark:text-slate-100 pr-10"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors"
+                >
+                  {showCurrentPassword ? (
+                    <Icons.EyeOff className="w-3.5 h-3.5" />
+                  ) : (
+                    <Icons.Eye className="w-3.5 h-3.5" />
+                  )}
+                </button>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[8px] md:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-0.5">New Key Assignment</label>
